@@ -36,7 +36,7 @@ dotnet test
 
 ## Configure constants for connecting and authentication
 
-The sample is configured using the file [appsettings.placeholder.json](appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
+The sample is configured using the file [appsettings.placeholder.json](OMF_API/appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
 
 The SDS Service is secured by obtaining tokens from Azure Active Directory. Such clients provide a client application identifier and an associated secret (or key) that are authenticated against the directory. You must replace the placeholders in your `appsettings.json` file with the authentication-related values you received from OSIsoft.
 
@@ -78,6 +78,6 @@ System.Net.WebException: The SSL connection could not be established, see inner 
 
 Tested against DotNet 2.2.105.
 
-For the general steps or switch languages see the Task [ReadMe](../../)  
-For the main OMF page on master [ReadMe](https://github.com/osisoft/OSI-Samples-OMF)  
-For the main landing page on master [ReadMe](https://github.com/osisoft/OSI-Samples)
+For the main OMF basic samples page on master [ReadMe](https://github.com/osisoft/OSI-Samples-OMF/blob/master/docs/OMF_BASIC_README.md)
+For the main OMF samples page on master [ReadMe](https://github.com/osisoft/OSI-Samples-OMF)  
+For the main OSIsoft samples page on master [ReadMe](https://github.com/osisoft/OSI-Samples)
