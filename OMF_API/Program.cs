@@ -1041,8 +1041,6 @@ namespace OMF_API
                 RequestUri = new Uri(objectContainingURLForAuth["token_endpoint"].ToString()),
                 Content = new FormUrlEncodedContent(data)
             };
-            Console.WriteLine(request2.RequestUri.ToString());
-            Console.WriteLine(request2.Content.ToString());
             request2.Headers.Add("Accept", "application/json");
 
             string res2 = Send(request2).Result;
