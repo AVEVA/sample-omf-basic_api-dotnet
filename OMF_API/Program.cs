@@ -96,7 +96,7 @@ namespace OMF_API
                 string apiVersion = configuration["ApiVersion"];
                 resource = configuration["Resource"];
                 producerToken = configuration["ProducerToken"];
-                clientId = configuration["clientId"];
+                clientId = configuration["ClientId"];
                 clientSecret = configuration["ClientKey"];
                 pidataserver = configuration["dataservername"];
                 verify = configuration["VERIFY_SSL"];
@@ -1041,6 +1041,7 @@ namespace OMF_API
             };
             request2.Headers.Add("Accept", "application/json");
 
+            Console.WriteLine($"{clientId} {resource}");
 
             string res2 = Send(request2).Result;
 
