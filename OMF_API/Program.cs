@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Threading;
 using System.Net;
@@ -24,12 +25,23 @@ namespace OMF_API
         // set this to try to force the above bool, otherwise it is determined by what is found in appsettins.json file
         static bool sendingToOCSBoolforced = false;
 
+        static bool VERIFY_SSL = true;
+
         // The version of the OMFmessages
-        static string omfVersion = "1.1"; 
+        static string omfVersion = "1.1";
 
         // Holders for parameters set by configuration
+        static string producerToken;
         static string omfendpoint;
         static string checkBase;
+        static string resource;
+        static string clientId = "";
+        static string clientSecret = "";
+        static string pidataserver = "";
+        static string verify = "";
+
+        static string username = "";
+        static string password = "";
 
         // Holds the token that is used for Auth for OCS.
         static string token = null;
@@ -45,19 +57,18 @@ namespace OMF_API
 
         static bool success = true;
         static Exception toThrow = null;
-        public static AppSettings Settings { get; set; }
 
         static void Main(string[] args)
         {
             runMain();
         }
-        
+
         /// <summary>
         /// Main function to allow for easy test.
         /// </summary>
         /// <param name="test">Whether this is a test or not</param>
         /// <returns></returns>
-        public static bool runMain(bool test= false)
+        public static bool runMain(bool test = false)
         {
             // Hold on to these in case there is a failure in deleting
 
@@ -73,27 +84,53 @@ namespace OMF_API
             try
             {
                 //bring in configuration.  Note storing credentials in plain text is not secure or advised
-                Settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "\\appsettings.json"));
+                IConfigurationBuilder builder = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile("appsettings.json")
+                 .AddJsonFile("appsettings.test.json", optional: true);
+                IConfiguration configuration = builder.Build();
 
                 // Step 1
+                string tenantId = configuration["TenantId"];
+                string namespaceId = configuration["NamespaceId"];
+                string apiVersion = configuration["ApiVersion"];
+                resource = configuration["Resource"];
+                producerToken = configuration["ProducerToken"];
+                clientId = configuration["clientId"];
+                clientSecret = configuration["ClientKey"];
+                pidataserver = configuration["dataservername"];
+                verify = configuration["VERIFY_SSL"];
+
+                username = configuration["username"];
+                password = configuration["password"];
+                /* not currently used, but would be needed to check AF creation
+                piassetserver = configuration["assetservername"];
+                afomfdatabase = configuration["afomfdatabase"];
+                */
+
                 if (!sendingToOCSBoolforced)
                 {
-                    sendingToOCS = Settings.TenantId != null;
+                    sendingToOCS = tenantId != null;
                 }
 
                 // need to make the appropriate url strings for sending and getting values
                 if (sendingToOCS)
                 {
-                    checkBase = $"{Settings.Resource}/api/{Settings.ApiVersion}/tenants/{Settings.TenantId}/namespaces/{Settings.NamespaceId}";
+                    checkBase = $"{resource}/api/{apiVersion}/tenants/{tenantId}/namespaces/{namespaceId}";
                     omfendpoint = checkBase + $"/omf";
                 }
                 else
-                {   
-                    checkBase = Settings.Resource;
+                {
+                    checkBase = resource;
                     omfendpoint = checkBase + $"/omf";
-                }           
+                }
 
-                if (!Settings.VERIFY_SSL)
+                if (!string.IsNullOrEmpty(verify) && verify == "false")
+                {
+                    VERIFY_SSL = false;
+                }
+
+                if (!VERIFY_SSL)
                 {
                     Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
                     // This turns off SSL verification
@@ -108,8 +145,8 @@ namespace OMF_API
                 sendTypesAndContainers();
 
                 int count = 0;
-                string value ="";
-                while (count == 0  || ((!test) && count < 2))
+                string value = "";
+                while (count == 0 || ((!test) && count < 2))
                 {
                     //step 9 
                     var val = create_data_values_for_first_dynamic_type("Container1");
@@ -158,10 +195,10 @@ namespace OMF_API
                 if (toThrow != null)
                     throw toThrow;
             }
-            
+
             return success;
         }
-        
+
         /// <summary>
         /// Checks to mkae sure things were deleted
         /// </summary>
@@ -186,13 +223,13 @@ namespace OMF_API
             }
             else
             {
-                string json1 = checkValue(checkBase + $"/dataservers?name=" + Settings.dataservername);
+                string json1 = checkValue(checkBase + $"/dataservers?name=" + pidataserver);
                 JObject result = JsonConvert.DeserializeObject<JObject>(json1);
-                string pointsURL  = result.Value<JObject>("Links").Value<String>("Points");
+                string pointsURL = result.Value<JObject>("Links").Value<String>("Points");
 
                 try
                 {
-                    string json2 = checkValue(pointsURL+ "?nameFilter=container1*");
+                    string json2 = checkValue(pointsURL + "?nameFilter=container1*");
                     JObject result2 = JsonConvert.DeserializeObject<JObject>(json2);
                     var item = result2.Value<JArray>("Items")[0];
                 }
@@ -237,7 +274,7 @@ namespace OMF_API
             Console.WriteLine("Checks");
             Console.WriteLine("Letting OMF get to data store");
             Thread.Sleep(10000);
-            
+
             if (sendingToOCS)
             {
                 //give a little bit of time for the OMF information to propogate
@@ -249,24 +286,24 @@ namespace OMF_API
                 json1 = checkValue(checkBase + $"/Streams" + $"/Container1" + $"/Data/last");
                 var valueJ = JsonConvert.DeserializeObject<List<JObject>>(value);
                 var jsonJ = JsonConvert.DeserializeObject<JObject>(json1);
-                var valueSent  =valueJ[0]["values"][0]["IntegerProperty"]?.ToString();
-                var valueGot  =jsonJ["IntegerProperty"]?.ToString();
+                var valueSent = valueJ[0]["values"][0]["IntegerProperty"]?.ToString();
+                var valueGot = jsonJ["IntegerProperty"]?.ToString();
                 if (String.Compare(valueSent, valueGot) != 0)
                     throw new Exception($"Returned value is not expected.  Sent {valueSent}.  Got {valueGot}.");
             }
             else
             {
-                string json1 = checkValue(checkBase + $"/dataservers?name=" + Settings.dataservername);
+                string json1 = checkValue(checkBase + $"/dataservers?name=" + pidataserver);
                 JObject result = JsonConvert.DeserializeObject<JObject>(json1);
-                string pointsURL  = result.Value<JObject>("Links").Value<String>("Points");
+                string pointsURL = result.Value<JObject>("Links").Value<String>("Points");
 
-                string json2 = checkValue(pointsURL+ "?nameFilter=container1*");
+                string json2 = checkValue(pointsURL + "?nameFilter=container1*");
                 JObject result2 = JsonConvert.DeserializeObject<JObject>(json2);
                 string EndValueUrl = result2.Value<JArray>("Items")[0].Value<JObject>("Links").Value<String>("EndValue");
 
                 string json3 = checkValue(EndValueUrl);
 
-                var valueJ =JsonConvert.DeserializeObject<List<JObject>>(value);
+                var valueJ = JsonConvert.DeserializeObject<List<JObject>>(value);
                 var jsonJ = JsonConvert.DeserializeObject<JObject>(json3);
 
                 if (valueJ[0]["values"][0]["IntegerProperty"].ToString() != jsonJ["Value"].ToString())
@@ -284,7 +321,8 @@ namespace OMF_API
         {
             integer_index1 += 2;
 
-            if (integer_index2_2 % 3 == 0) {
+            if (integer_index2_2 % 3 == 0)
+            {
                 integer_index2_2 = 1;
                 integer_index2_1 += 1;
             }
@@ -314,7 +352,7 @@ namespace OMF_API
                                 ""IntKey2"": {9}
                             }}
                         ]
-                    }}]", NonTimeStampIndexID, rnd.NextDouble()*88, integer_index1, rnd.NextDouble() * 88, integer_index1 +1, MultiIndexId, rnd.NextDouble() * -125, rnd.NextDouble() * 42, integer_index2_1, integer_index2_2);
+                    }}]", NonTimeStampIndexID, rnd.NextDouble() * 88, integer_index1, rnd.NextDouble() * 88, integer_index1 + 1, MultiIndexId, rnd.NextDouble() * -125, rnd.NextDouble() * 42, integer_index2_1, integer_index2_2);
         }
 
         /// <summary>
@@ -361,7 +399,7 @@ namespace OMF_API
                             }}
                         ]
                     }}]",
-                    containerId, getCurrentTime(), rnd.NextDouble()*100, rnd.NextDouble() * 100, dynamicBoolHolder.ToString());
+                    containerId, getCurrentTime(), rnd.NextDouble() * 100, rnd.NextDouble() * 100, dynamicBoolHolder.ToString());
         }
 
         /// <summary>
@@ -371,8 +409,8 @@ namespace OMF_API
         /// <returns></returns>
         private static string create_data_values_for_first_dynamic_type(string containerId)
         {
-            return string.Format(@"[{{""containerid"": ""{0}"",""values"": [{{""timestamp"": ""{1}"",""IntegerProperty"": {2}}}]}}]", 
-                    containerId, getCurrentTime(), rnd.Next(0,100));
+            return string.Format(@"[{{""containerid"": ""{0}"",""values"": [{{""timestamp"": ""{1}"",""IntegerProperty"": {2}}}]}}]",
+                    containerId, getCurrentTime(), rnd.Next(0, 100));
         }
 
         /// <summary>
@@ -411,8 +449,8 @@ namespace OMF_API
 
             if (sendingToOCS)
                 sendContainers2(action);
-            
-            if (!sendingToOCS && String.Compare(action,"delete",true)==0)
+
+            if (!sendingToOCS && String.Compare(action, "delete", true) == 0)
             {
                 // Step 7
                 sendStaticData(action);
@@ -429,30 +467,30 @@ namespace OMF_API
         private static void deleteTypesAndContainers(string action = "delete")
         {
             if (sendingToOCS)
-                RunInTryCatch(sendContainers2,action);
-                // sendContainers2(action);
+                RunInTryCatch(sendContainers2, action);
+            // sendContainers2(action);
 
-            RunInTryCatch(sendContainers,action);
+            RunInTryCatch(sendContainers, action);
             // sendContainers(action);
 
             if (sendingToOCS)
-                RunInTryCatch(sendNonTimeStampTypes,action);
-                //sendNonTimeStampTypes(action);
+                RunInTryCatch(sendNonTimeStampTypes, action);
+            //sendNonTimeStampTypes(action);
 
-            RunInTryCatch(sendFirstDynamicType,action);
-            RunInTryCatch(sendSecondDynamicType,action);
-            RunInTryCatch(sendThirdDynamicType,action);
+            RunInTryCatch(sendFirstDynamicType, action);
+            RunInTryCatch(sendSecondDynamicType, action);
+            RunInTryCatch(sendThirdDynamicType, action);
             // sendFirstDynamicType(action);
             // sendSecondDynamicType(action);
             // sendThirdDynamicType(action);
-            
+
             if (!sendingToOCS)
             {
-                RunInTryCatch(sendFirstStaticType,action);
-                RunInTryCatch(sendSecondStaticType,action);
+                RunInTryCatch(sendFirstStaticType, action);
+                RunInTryCatch(sendSecondStaticType, action);
                 // sendFirstStaticType(action);
                 // sendSecondStaticType(action);
-            }            
+            }
         }
 
         /// <summary>
@@ -461,12 +499,12 @@ namespace OMF_API
         /// <param name="messageType"></param>
         /// <param name="dataJson"></param>
         /// <param name="action"></param>
-        private static void sendValue(string messageType, string dataJson, string action = "create" )
+        private static void sendValue(string messageType, string dataJson, string action = "create")
         {
             WebRequest request = WebRequest.Create(new Uri(omfendpoint));
             request.Method = "post";
 
-            request.Headers.Add("producertoken", Settings.ProducerToken);
+            request.Headers.Add("producertoken", producerToken);
             request.Headers.Add("messagetype", messageType);
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "json");
@@ -478,7 +516,7 @@ namespace OMF_API
             else
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(Settings.username, Settings.password);
+                request.Credentials = new NetworkCredential(username, password);
             }
 
             byte[] byteArray;
@@ -508,7 +546,7 @@ namespace OMF_API
             // Write the data to the request stream.  
             dataStream.Write(byteArray, 0, byteArray.Length);
             // Close the Stream object.  
-            dataStream.Close();          
+            dataStream.Close();
 
             Send(request);
         }
@@ -526,7 +564,7 @@ namespace OMF_API
             else
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(Settings.username, Settings.password);
+                request.Credentials = new NetworkCredential(username, password);
             }
 
             return Send(request);
@@ -548,7 +586,7 @@ namespace OMF_API
                 dest.Write(bytes, 0, cnt);
             }
         }
-        
+
         /// <summary>
         /// Actual async call to send message to omf endpoint
         /// </summary>
@@ -566,7 +604,7 @@ namespace OMF_API
                     var code = (int)response.StatusCode;
 
                     using (StreamReader reader = new StreamReader(stream))
-                    { 
+                    {
                         // Read the content.  
                         string responseString = reader.ReadToEnd();
                         // Display the content.  
@@ -581,7 +619,8 @@ namespace OMF_API
         /// Wrapper around definition of first static type
         /// </summary>
         /// <param name="action"></param>
-        public static void sendFirstStaticType(string action = "create") {
+        public static void sendFirstStaticType(string action = "create")
+        {
             sendValue("type",
             @"[{
                 ""id"": ""FirstStaticTypev2"",
@@ -650,7 +689,8 @@ namespace OMF_API
         /// wrapper around defintiion of first dynamic type
         /// </summary>
         /// <param name="action"></param>
-        public static void sendFirstDynamicType(string action = "create") {
+        public static void sendFirstDynamicType(string action = "create")
+        {
             sendValue("type",
             @"[{
                ""id"": ""FirstDynamicType"",
@@ -679,7 +719,8 @@ namespace OMF_API
         /// wrapper around defintiion of second dynamic type
         /// </summary>
         /// <param name="action"></param>
-        public static void sendSecondDynamicType(string action = "create") {
+        public static void sendSecondDynamicType(string action = "create")
+        {
             sendValue("type",
             @"[{
                ""id"": ""SecondDynamicType"",
@@ -721,7 +762,8 @@ namespace OMF_API
         /// wrapper around defintiion of third dynamic type
         /// </summary>
         /// <param name="action"></param>
-        public static void sendThirdDynamicType(string action = "create") {
+        public static void sendThirdDynamicType(string action = "create")
+        {
             sendValue("type",
             @"[{
                ""id"": ""ThirdDynamicType"",
@@ -975,9 +1017,9 @@ namespace OMF_API
                 return token;
 
             HttpRequestMessage request = new HttpRequestMessage()
-                {
-                    Method = HttpMethod.Get,
-                    RequestUri = new Uri(Settings.Resource + "/identity/.well-known/openid-configuration")
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri(resource + "/identity/.well-known/openid-configuration")
             };
             request.Headers.Add("Accept", "application/json");
 
@@ -986,8 +1028,8 @@ namespace OMF_API
 
             var data = new Dictionary<string, string>
             {
-               { "client_id", Settings.ClientId },
-               { "client_secret", Settings.ClientKey },
+               { "client_id", clientId },
+               { "client_secret", clientSecret },
                { "grant_type", "client_credentials" }
             };
 
