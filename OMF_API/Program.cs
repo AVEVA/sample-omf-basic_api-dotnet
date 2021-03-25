@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using System.Net.Http;
 using System.Threading;
 using System.Net;
@@ -25,23 +24,12 @@ namespace OMF_API
         // set this to try to force the above bool, otherwise it is determined by what is found in appsettins.json file
         static bool sendingToOCSBoolforced = false;
 
-        static bool VERIFY_SSL = true;
-
         // The version of the OMFmessages
         static string omfVersion = "1.1"; 
 
         // Holders for parameters set by configuration
-        static string producerToken;
         static string omfendpoint;
         static string checkBase;
-        static string resource;
-        static string clientId = "";
-        static string clientSecret = "";
-        static string pidataserver = "";
-        static string verify = "";
-
-        static string username = "";
-        static string password = "";
 
         // Holds the token that is used for Auth for OCS.
         static string token = null;
@@ -57,6 +45,7 @@ namespace OMF_API
 
         static bool success = true;
         static Exception toThrow = null;
+        public static AppSettings Settings { get; set; }
 
         static void Main(string[] args)
         {
@@ -84,53 +73,27 @@ namespace OMF_API
             try
             {
                 //bring in configuration.  Note storing credentials in plain text is not secure or advised
-                IConfigurationBuilder builder = new ConfigurationBuilder()
-                 .SetBasePath(Directory.GetCurrentDirectory())
-                 .AddJsonFile("appsettings.json")
-                 .AddJsonFile("appsettings.test.json", optional: true);
-                IConfiguration configuration = builder.Build();
+                Settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "\\appsettings.json"));
 
                 // Step 1
-                string tenantId = configuration["TenantId"];
-                string namespaceId = configuration["NamespaceId"];
-                string apiVersion = configuration["ApiVersion"];
-                resource = configuration["Resource"];
-                producerToken = configuration["ProducerToken"];
-                clientId = configuration["clientId"];
-                clientSecret = configuration["ClientKey"];
-                pidataserver = configuration["dataservername"];
-                verify = configuration["VERIFY_SSL"];
-
-                username = configuration["username"];
-                password = configuration["password"];
-                /* not currently used, but would be needed to check AF creation
-                piassetserver = configuration["assetservername"];
-                afomfdatabase = configuration["afomfdatabase"];
-                */
-
                 if (!sendingToOCSBoolforced)
                 {
-                    sendingToOCS = tenantId != null;
+                    sendingToOCS = Settings.TenantId != null;
                 }
 
                 // need to make the appropriate url strings for sending and getting values
                 if (sendingToOCS)
                 {
-                    checkBase = $"{resource}/api/{apiVersion}/tenants/{tenantId}/namespaces/{namespaceId}";
+                    checkBase = $"{Settings.Resource}/api/{Settings.ApiVersion}/tenants/{Settings.TenantId}/namespaces/{Settings.NamespaceId}";
                     omfendpoint = checkBase + $"/omf";
                 }
                 else
                 {   
-                    checkBase = resource;
+                    checkBase = Settings.Resource;
                     omfendpoint = checkBase + $"/omf";
                 }           
 
-                if (!string.IsNullOrEmpty(verify) && verify == "false")    
-                {
-                    VERIFY_SSL = false;
-                }
-
-                if (!VERIFY_SSL)
+                if (!Settings.VERIFY_SSL)
                 {
                     Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
                     // This turns off SSL verification
@@ -223,7 +186,7 @@ namespace OMF_API
             }
             else
             {
-                string json1 = checkValue(checkBase + $"/dataservers?name=" + pidataserver);
+                string json1 = checkValue(checkBase + $"/dataservers?name=" + Settings.dataservername);
                 JObject result = JsonConvert.DeserializeObject<JObject>(json1);
                 string pointsURL  = result.Value<JObject>("Links").Value<String>("Points");
 
@@ -293,7 +256,7 @@ namespace OMF_API
             }
             else
             {
-                string json1 = checkValue(checkBase + $"/dataservers?name=" + pidataserver);
+                string json1 = checkValue(checkBase + $"/dataservers?name=" + Settings.dataservername);
                 JObject result = JsonConvert.DeserializeObject<JObject>(json1);
                 string pointsURL  = result.Value<JObject>("Links").Value<String>("Points");
 
@@ -503,7 +466,7 @@ namespace OMF_API
             WebRequest request = WebRequest.Create(new Uri(omfendpoint));
             request.Method = "post";
 
-            request.Headers.Add("producertoken", producerToken);
+            request.Headers.Add("producertoken", Settings.ProducerToken);
             request.Headers.Add("messagetype", messageType);
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "json");
@@ -515,7 +478,7 @@ namespace OMF_API
             else
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(username, password);
+                request.Credentials = new NetworkCredential(Settings.username, Settings.password);
             }
 
             byte[] byteArray;
@@ -563,7 +526,7 @@ namespace OMF_API
             else
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(username, password);
+                request.Credentials = new NetworkCredential(Settings.username, Settings.password);
             }
 
             return Send(request);
@@ -1014,7 +977,7 @@ namespace OMF_API
             HttpRequestMessage request = new HttpRequestMessage()
                 {
                     Method = HttpMethod.Get,
-                    RequestUri = new Uri(resource + "/identity/.well-known/openid-configuration")
+                    RequestUri = new Uri(Settings.Resource + "/identity/.well-known/openid-configuration")
             };
             request.Headers.Add("Accept", "application/json");
 
@@ -1023,8 +986,8 @@ namespace OMF_API
 
             var data = new Dictionary<string, string>
             {
-               { "client_id", clientId },
-               { "client_secret", clientSecret },
+               { "client_id", Settings.ClientId },
+               { "client_secret", Settings.ClientKey },
                { "grant_type", "client_credentials" }
             };
 
