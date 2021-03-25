@@ -84,7 +84,7 @@ namespace OMF_API
             try
             {
                 //bring in configuration.  Note storing credentials in plain text is not secure or advised
-                var txt = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + "\\appsettings.json");
+                var txt = System.IO.File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json");
                 Console.Write(txt);
                 IConfigurationBuilder builder = new ConfigurationBuilder()
                  .SetBasePath(Directory.GetCurrentDirectory())
