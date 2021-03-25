@@ -31,6 +31,7 @@ namespace OMF_API
         static string omfVersion = "1.1";
 
         // Holders for parameters set by configuration
+        static string tenantId;
         static string producerToken;
         static string omfendpoint;
         static string checkBase;
@@ -91,7 +92,7 @@ namespace OMF_API
                 IConfiguration configuration = builder.Build();
 
                 // Step 1
-                string tenantId = configuration["TenantId"];
+                tenantId = configuration["TenantId"];
                 string namespaceId = configuration["NamespaceId"];
                 string apiVersion = configuration["ApiVersion"];
                 resource = configuration["Resource"];
@@ -1030,7 +1031,8 @@ namespace OMF_API
             {
                { "client_id", clientId },
                { "client_secret", clientSecret },
-               { "grant_type", "client_credentials" }
+               { "grant_type", "client_credentials" },
+               { "acr_values", "tenant:" + tenantId }
             };
 
             HttpRequestMessage request2 = new HttpRequestMessage()
@@ -1039,9 +1041,9 @@ namespace OMF_API
                 RequestUri = new Uri(objectContainingURLForAuth["token_endpoint"].ToString()),
                 Content = new FormUrlEncodedContent(data)
             };
+            Console.WriteLine(request2.RequestUri.ToString());
+            Console.WriteLine(request2.Content.ToString());
             request2.Headers.Add("Accept", "application/json");
-
-            Console.WriteLine($"{clientId} {resource}");
 
             string res2 = Send(request2).Result;
 
