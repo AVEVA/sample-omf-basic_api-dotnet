@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
-using System.Net.Http;
-using System.Threading;
-using System.Net;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Http;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OMF_API
 {
@@ -17,12 +17,12 @@ namespace OMF_API
         private static readonly HttpClient client = new HttpClient();
 
         // The version of the OMFmessages
-        static string omfVersion = "1.1"; 
+        static string omfVersion = "1.1";
 
         // Holders for the data message values
         static Random rnd = new Random();
         static bool dynamicBoolHolder = true;
-        static int dynamicIntHolder = 0; 
+        static int dynamicIntHolder = 0;
 
         static void Main(string[] args)
         {
@@ -34,7 +34,7 @@ namespace OMF_API
         /// </summary>
         /// <param name="test">Whether this is a test or not</param>
         /// <returns></returns>
-        public static bool runMain(bool test= false)
+        public static bool runMain(bool test = false)
         {
             bool success = true;
 
@@ -61,7 +61,7 @@ namespace OMF_API
                     if ((endpoint.verify_ssl is bool) && (bool)endpoint.verify_ssl == false)
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
 
-                    
+
                     getToken(endpoint);
 
                     // Step 5 - Send OMF Types
@@ -103,7 +103,7 @@ namespace OMF_API
                     count++;
                     Thread.Sleep(1000);
                 }
-                
+
             }
             catch (Exception e)
             {
@@ -166,7 +166,7 @@ namespace OMF_API
             if (data.containerid == "Container1" || data.containerid == "Container2")
             {
                 data.values[0].timestamp = getCurrentTime();
-                data.values[0].IntegerProperty = (int) (rnd.NextDouble() * 100);
+                data.values[0].IntegerProperty = (int)(rnd.NextDouble() * 100);
             }
             else if (data.containerid == "Container3")
             {
@@ -308,7 +308,7 @@ namespace OMF_API
             // compress dataJson if configured for compression
             byte[] byteArray;
 
-            
+
             if (!endpoint.use_compression)
             {
                 request.ContentType = "application/json";

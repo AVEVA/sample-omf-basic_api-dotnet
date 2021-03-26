@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OMF_API
 {
@@ -92,7 +89,7 @@ namespace OMF_API
         {
             string base_endpoint = "";
 
-            if(this.endpoint_type == "OCS")
+            if (this.endpoint_type == "OCS")
             {
                 base_endpoint = $"{this.resource}/api/{this.api_version}/tenants/{this.tenant}/namespaces/{this.namespace_name}";
             }
