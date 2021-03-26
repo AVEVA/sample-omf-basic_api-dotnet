@@ -122,7 +122,7 @@ namespace OMF_API
         /// </summary>
         /// <param string="filename">The file to retrieve</param>
         /// <returns></returns>
-        private static dynamic getJsonFile(string filename)
+        public static dynamic getJsonFile(string filename)
         {
             dynamic dynamicJson = JsonConvert.DeserializeObject(File.ReadAllText($"{Directory.GetCurrentDirectory()}\\{filename}"));
 
@@ -133,7 +133,7 @@ namespace OMF_API
         /// Gets the application settings
         /// </summary>
         /// <returns></returns>
-        private static AppSettings getAppSettings()
+        public static AppSettings getAppSettings()
         {
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "\\appsettings.json"));
 
@@ -151,7 +151,7 @@ namespace OMF_API
         /// Gets the current time
         /// </summary>
         /// <returns></returns>
-        private static string getCurrentTime()
+        public static string getCurrentTime()
         {
             return DateTime.UtcNow.ToString("o");
         }
@@ -161,7 +161,7 @@ namespace OMF_API
         /// </summary>
         /// <param name="data">The dynamic json data object to populate</param>
         /// <returns></returns>
-        private static void getData(dynamic data)
+        public static void getData(dynamic data)
         {
             if (data.containerid == "Container1" || data.containerid == "Container2")
             {
@@ -238,7 +238,7 @@ namespace OMF_API
         /// </summary>
         /// <param name="request"></param>
         /// <returns>The result of the async task of the responding value from the endpoint</returns>
-        private static async Task<string> Send(HttpRequestMessage request)
+        public static async Task<string> Send(HttpRequestMessage request)
         {
             var response = await client.SendAsync(request);
 
@@ -254,9 +254,8 @@ namespace OMF_API
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        private static string Send(WebRequest request)
+        public static string Send(WebRequest request)
         {
-            // ServicePointManager.SecurityProtocol = SecurityProtocolType.;s
             using (var resp = request.GetResponse())
             {
                 using (HttpWebResponse response = (HttpWebResponse)resp)
@@ -284,7 +283,7 @@ namespace OMF_API
         /// <param name="messageType">The OMF message type</param>
         /// <param name="dataJson">The message payload in a string format</param>
         /// <param name="action">The action for the OMF endpoint to conduct</param>
-        private static void sendMessageToOmfEndpoint(Endpoint endpoint, string messageType, string dataJson, string action = "create")
+        public static void sendMessageToOmfEndpoint(Endpoint endpoint, string messageType, string dataJson, string action = "create")
         {
             // create a request
             WebRequest request = WebRequest.Create(new Uri(endpoint.getOmfEndpoint()));
