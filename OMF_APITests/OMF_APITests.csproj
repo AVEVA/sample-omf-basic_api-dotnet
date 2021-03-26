@@ -1,13 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>HIGHENTROPYVA</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,9 +12,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
   </ItemGroup>
 
-
   <ItemGroup>
     <ProjectReference Include="..\OMF_API\OMF_API.csproj" />
-  </ItemGroup>
-  
+  </ItemGroup>  
 </Project>
