@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OMF_API;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,36 @@ namespace OMF_APITests
                 {
                     if (endpoint.endpoint_type == "PI")
                     {
+                        // get point URLs
+                        HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/dataservers?name={endpoint.data_server_name}").Result;
+                        string content = response.Content.ReadAsStringAsync().Result;
+                        dynamic dynamicJson = JsonConvert.DeserializeObject(content);
+                        string pointsURL = dynamicJson.Links.Points;
 
+                        // get point data and check response
+                        foreach (var omfContainer in omfContainers)
+                        {
+                            response = sendGetRequestToEndpoint(endpoint, $"{pointsURL}?nameFilter={omfContainer.id}*").Result;
+                            content = response.Content.ReadAsStringAsync().Result;
+                            dynamicJson = JsonConvert.DeserializeObject(content);
+                            
+                            // get end value URLs
+                            foreach(var item in dynamicJson.Items)
+                            {
+                                string endValueURL = item.Links.Value;
+                                // retrieve data
+                                response = sendGetRequestToEndpoint(endpoint, $"{endValueURL}").Result;
+                                content = response.Content.ReadAsStringAsync().Result;
+                                dynamicJson = JsonConvert.DeserializeObject(content);
+                                dynamic endValue = dynamicJson.Value;
+                                //check that the response was good and that data was written to the point
+                                JToken name = endValue.SelectToken("Name");
+                                if (!response.IsSuccessStatusCode)
+                                    success = false;
+                                else if (name != null && endValue.Name == "Pt Created")
+                                    success = false;
+                            }
+                        }
                     }
                     else
                     {
