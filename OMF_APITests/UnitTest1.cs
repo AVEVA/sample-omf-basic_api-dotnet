@@ -3,7 +3,6 @@ using Newtonsoft.Json.Linq;
 using OMF_API;
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
@@ -53,9 +52,9 @@ namespace OMF_APITests
                             response = sendGetRequestToEndpoint(endpoint, $"{pointsURL}?nameFilter={omfContainer.id}*").Result;
                             content = response.Content.ReadAsStringAsync().Result;
                             dynamicJson = JsonConvert.DeserializeObject(content);
-                            
+
                             // get end value URLs
-                            foreach(var item in dynamicJson.Items)
+                            foreach (var item in dynamicJson.Items)
                             {
                                 string endValueURL = item.Links.Value;
                                 // retrieve data
@@ -158,7 +157,7 @@ namespace OMF_APITests
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(uri)
-            }; 
+            };
 
             // add headers to request
             if (endpoint.endpoint_type == "OCS")
