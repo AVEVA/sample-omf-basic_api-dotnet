@@ -124,7 +124,7 @@ namespace OMF_API
         /// <returns></returns>
         public static dynamic getJsonFile(string filename)
         {
-            dynamic dynamicJson = JsonConvert.DeserializeObject(File.ReadAllText($"{Directory.GetCurrentDirectory()}\\{filename}"));
+            dynamic dynamicJson = JsonConvert.DeserializeObject(File.ReadAllText($"{Directory.GetCurrentDirectory()}/{filename}"));
 
             return dynamicJson;
         }
