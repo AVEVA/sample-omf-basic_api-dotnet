@@ -135,7 +135,7 @@ namespace OMF_API
         /// <returns></returns>
         public static AppSettings getAppSettings()
         {
-            AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "\\appsettings.json"));
+            AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json"));
 
             // check for optional/nullable parameters
             foreach (var endpoint in settings.endpoints)
