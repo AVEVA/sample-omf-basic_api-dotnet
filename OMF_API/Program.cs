@@ -34,7 +34,7 @@ namespace OMF_API
         /// </summary>
         /// <param name="test">Whether this is a test or not</param>
         /// <returns></returns>
-        public static bool runMain(bool test = false)
+        public static bool runMain(bool test = false, Dictionary<string, dynamic> lastSentValues = null)
         {
             bool success = true;
 
@@ -91,13 +91,20 @@ namespace OMF_API
 
                     foreach (var omfDatum in omfData)
                     {
+                        // retrieve data
+                        getData(omfDatum);
+
                         foreach (var endpoint in endpoints)
                         {
                             // send data
-                            getData(omfDatum);
                             string omfDatumString = $"[{JsonConvert.SerializeObject(omfDatum)}]";
                             sendMessageToOmfEndpoint(endpoint, "data", omfDatumString);
                         }
+
+                        // record the values sent if this is a test
+                        if (test && count == 1)
+                            lastSentValues.Add((string)omfDatum.containerid, omfDatum);
+
                     }
 
                     count++;

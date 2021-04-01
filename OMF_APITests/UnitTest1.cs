@@ -17,14 +17,15 @@ namespace OMF_APITests
         public void Test1()
         {
             // Steps 1 to 7 - Run the main program
-            Assert.True(OMF_API.Program.runMain(true));
+            Dictionary<string, dynamic> sentData = new Dictionary<string, dynamic>();
+            Assert.True(OMF_API.Program.runMain(true, sentData));
             // Step 8 - Check Creations
-            Assert.True(checkCreations());
+            Assert.True(checkCreations(sentData));
             // Step 9 - Cleanup
             Assert.True(cleanup());
         }
 
-        private bool checkCreations()
+        private bool checkCreations(Dictionary<string, dynamic> sentData)
         {
             AppSettings settings = OMF_API.Program.getAppSettings();
             IList<Endpoint> endpoints = settings.endpoints;
@@ -68,6 +69,9 @@ namespace OMF_APITests
                                     success = false;
                                 else if (name != null && endValue.Name == "Pt Created")
                                     success = false;
+                                // compare the returned data to what was sent
+                                if (!compareData((string)item.Name, endValue, sentData[(string)omfContainer.id]))
+                                    success = false;
                             }
                         }
                     }
@@ -94,7 +98,10 @@ namespace OMF_APITests
                         {
                             HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/Streams/{omfDatum.containerid}/Data/last").Result;
                             string responseString = response.Content.ReadAsStringAsync().Result;
+                            string content = response.Content.ReadAsStringAsync().Result;
                             if (!response.IsSuccessStatusCode || responseString == "")
+                                success = false;
+                            else if (!compareData(JsonConvert.DeserializeObject(content), sentData[(string)omfDatum.containerid]))
                                 success = false;
                         }
 
@@ -150,7 +157,47 @@ namespace OMF_APITests
             return success;
         }
 
-        public static async Task<HttpResponseMessage> sendGetRequestToEndpoint(Endpoint endpoint, string uri)
+        private bool compareData(dynamic response, dynamic sentData)
+        {
+            bool success = true;
+
+            foreach (JProperty property in sentData["values"][0])
+            {
+                if (property.Name != "timestamp" && ((string)property.Value != (string)response.Property(property.Name).Value))
+                    success = false;
+            }
+
+            return success;
+        }
+
+        private bool compareData(string itemName, dynamic response, dynamic sentData)
+        {
+            bool success = true;
+
+            var split = itemName.Split(".");
+            if (split.Length == 2)
+            {
+                string key = split[1];
+                foreach (JProperty property in sentData["values"][0])
+                {
+                    if (key == property.Name && ((string)property.Value != (string)response))
+                        success = false;
+                }
+            }
+            else
+            {
+                string key = split[0];
+                foreach (JProperty property in sentData["values"][0])
+                {
+                    if (property.Name != "timestamp" && ((string)property.Value != (string)response))
+                        success = false;
+                }
+            }
+
+            return success;
+        }
+
+        private static async Task<HttpResponseMessage> sendGetRequestToEndpoint(Endpoint endpoint, string uri)
         {
             // create a request
             HttpRequestMessage request = new HttpRequestMessage()
@@ -160,6 +207,7 @@ namespace OMF_APITests
             };
 
             // add headers to request
+            request.Headers.Add("Accept-Verbosity", "verbose");
             if (endpoint.endpoint_type == "OCS")
             {
                 request.Headers.Add("Authorization", "Bearer " + OMF_API.Program.getToken(endpoint));
