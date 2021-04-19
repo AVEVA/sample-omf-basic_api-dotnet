@@ -253,7 +253,9 @@ namespace OMF_API
             var response = await client.SendAsync(request);
 
             var responseString = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
+
+            // check status code and ignore conflicts which indicate that a type with the specified ID and version already exists
+            if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.Conflict)
                 throw new Exception($"Error sending OMF response code:{response.StatusCode}.  Response {responseString}");
             return responseString;
         }
