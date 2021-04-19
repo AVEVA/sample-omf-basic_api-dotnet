@@ -89,22 +89,22 @@ namespace OMF_API
         {
             get
             {
-                string base_endpoint = "";
+                string baseEndpoint = "";
 
                 if (string.Equals(this.endpointType, "OCS"))
                 {
-                    base_endpoint = $"{this.resource}/api/{this.apiVersion}/tenants/{this.tenant}/namespaces/{this.namespaceName}";
+                    baseEndpoint = $"{this.resource}/api/{this.apiVersion}/tenants/{this.tenant}/namespaces/{this.namespaceName}";
                 }
                 else if (string.Equals(this.endpointType, "EDS"))
                 {
-                    base_endpoint = $"{this.resource}/api/{this.apiVersion}/tenants/default/namespaces/default";
+                    baseEndpoint = $"{this.resource}/api/{this.apiVersion}/tenants/default/namespaces/default";
                 }
                 else if (string.Equals(this.endpointType, "PI"))
                 {
-                    base_endpoint = this.resource;
+                    baseEndpoint = this.resource;
                 }
 
-                return base_endpoint;
+                return baseEndpoint;
             }
         }
 
