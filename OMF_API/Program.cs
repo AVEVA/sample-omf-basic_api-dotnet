@@ -150,7 +150,7 @@ namespace OMF_API
             {
                 if (endpoint.verifySSL == null)
                     endpoint.verifySSL = true;
-                if (!string.Equals(endpoint.endpointType, "OCS") && !string.Equals(endpoint.endpointType, "EDS") && !string.Equals(endpoint.endpointType, "PI"))
+                if (!(string.Equals(endpoint.endpointType, "OCS") || string.Equals(endpoint.endpointType, "EDS") || string.Equals(endpoint.endpointType, "PI")))
                     throw new Exception($"Invalid endpoint type {endpoint.endpointType}");
             }
 
