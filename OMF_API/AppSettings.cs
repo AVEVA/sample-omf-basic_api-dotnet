@@ -15,7 +15,7 @@ namespace OMF_API
         /// <summary>
         /// The endpoint type. This will be OCS, EDS, or PI
         /// </summary>
-        public string endpoint_type { get; set; }
+        public string endpointType { get; set; }
 
         /// <summary>
         /// The base endpoint. E.g. https://dat-b.osisoft.com for OCS
@@ -25,7 +25,7 @@ namespace OMF_API
         /// <summary>
         /// The name of the Namespace in OCS that is being sent to
         /// </summary>
-        public string namespace_name { get; set; }
+        public string namespaceName { get; set; }
 
         /// <summary>
         /// The name of the Tenant ID of the Tenant in OCS that is being sent to
@@ -35,37 +35,37 @@ namespace OMF_API
         /// <summary>
         /// The client ID that is being used for authenticating to OCS
         /// </summary>
-        public string client_id { get; set; }
+        public string clientId { get; set; }
 
         /// <summary>
         /// The client secret that is being used for authenticating to OCS
         /// </summary>
-        public string client_secret { get; set; }
+        public string clientSecret { get; set; }
 
         /// <summary>
         /// The API version of the endpoint
         /// </summary>
-        public string api_version { get; set; }
+        public string apiVersion { get; set; }
 
         /// <summary>
         /// A feature flag for verifying SSL when connecting to the endpoint
         /// </summary>
-        public object verify_ssl { get; set; }
+        public object verifySSL { get; set; }
 
         /// <summary>
         /// A feature flag for enabling compression on messages send to endpoint
         /// </summary>
-        public bool use_compression { get; set; }
+        public bool useCompression { get; set; }
 
         /// <summary>
         /// An optional timeout setting for web requests
         /// </summary>
-        public int web_request_timeout_seconds { get; set; }
+        public int webRequestTimeoutSeconds { get; set; }
 
         /// <summary>
         /// The name of the PI Data Archive that is being sent to
         /// </summary>
-        public string data_server_name { get; set; }
+        public string dataServerName { get; set; }
 
         /// <summary>
         /// The username that is being used for authenticating to the PI Web API
@@ -85,32 +85,35 @@ namespace OMF_API
         /// <summary>
         /// returns the base endpoint URL of endpoint
         /// </summary>
-        public string getBaseEndpoint()
+        public string baseEndpoint
         {
-            string base_endpoint = "";
+            get
+            {
+                string base_endpoint = "";
 
-            if (this.endpoint_type == "OCS")
-            {
-                base_endpoint = $"{this.resource}/api/{this.api_version}/tenants/{this.tenant}/namespaces/{this.namespace_name}";
-            }
-            else if (this.endpoint_type == "EDS")
-            {
-                base_endpoint = $"{this.resource}/api/{this.api_version}/tenants/default/namespaces/default";
-            }
-            else if (this.endpoint_type == "PI")
-            {
-                base_endpoint = this.resource;
-            }
+                if (string.Equals(this.endpointType, "OCS"))
+                {
+                    base_endpoint = $"{this.resource}/api/{this.apiVersion}/tenants/{this.tenant}/namespaces/{this.namespaceName}";
+                }
+                else if (string.Equals(this.endpointType, "EDS"))
+                {
+                    base_endpoint = $"{this.resource}/api/{this.apiVersion}/tenants/default/namespaces/default";
+                }
+                else if (string.Equals(this.endpointType, "PI"))
+                {
+                    base_endpoint = this.resource;
+                }
 
-            return base_endpoint;
+                return base_endpoint;
+            }
         }
 
         /// <summary>
         /// returns the omf endpoint URL of endpoint
         /// </summary>
-        public string getOmfEndpoint()
+        public string omf_endpoint
         {
-            return $"{this.getBaseEndpoint()}/omf";
+            get { return $"{this.baseEndpoint}/omf"; }
         }
     }
 }

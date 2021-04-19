@@ -39,10 +39,10 @@ namespace OMF_APITests
             {
                 try
                 {
-                    if (endpoint.endpoint_type == "PI")
+                    if (string.Equals(endpoint.endpointType, "PI"))
                     {
                         // get point URLs
-                        HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/dataservers?name={endpoint.data_server_name}").Result;
+                        HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/dataservers?name={endpoint.dataServerName}").Result;
                         string content = response.Content.ReadAsStringAsync().Result;
                         dynamic dynamicJson = JsonConvert.DeserializeObject(content);
                         string pointsURL = dynamicJson.Links.Points;
@@ -67,7 +67,7 @@ namespace OMF_APITests
                                 JToken name = endValue.SelectToken("Name");
                                 if (!response.IsSuccessStatusCode)
                                     success = false;
-                                else if (name != null && endValue.Name == "Pt Created")
+                                else if (name != null && string.Equals(endValue.Name, "Pt Created"))
                                     success = false;
                                 // compare the returned data to what was sent
                                 if (!compareData((string)item.Name, endValue, sentData[(string)omfContainer.id]))
@@ -80,7 +80,7 @@ namespace OMF_APITests
                         // retrieve types and check response
                         foreach (var omfType in omfTypes)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/Types/{omfType.id}").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Types/{omfType.id}").Result;
                             if (!response.IsSuccessStatusCode)
                                 success = false;
                         }
@@ -88,7 +88,7 @@ namespace OMF_APITests
                         // retrieve containers and check response
                         foreach (var omfContainer in omfContainers)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/Streams/{omfContainer.id}").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Streams/{omfContainer.id}").Result;
                             if (!response.IsSuccessStatusCode)
                                 success = false;
                         }
@@ -96,10 +96,10 @@ namespace OMF_APITests
                         // retrieve most recent data and check response
                         foreach (var omfDatum in omfData)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.getBaseEndpoint()}/Streams/{omfDatum.containerid}/Data/last").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Streams/{omfDatum.containerid}/Data/last").Result;
                             string responseString = response.Content.ReadAsStringAsync().Result;
                             string content = response.Content.ReadAsStringAsync().Result;
-                            if (!response.IsSuccessStatusCode || responseString == "")
+                            if (!response.IsSuccessStatusCode || string.Equals(responseString, ""))
                                 success = false;
                             else if (!compareData(JsonConvert.DeserializeObject(content), sentData[(string)omfDatum.containerid]))
                                 success = false;
@@ -163,7 +163,7 @@ namespace OMF_APITests
 
             foreach (JProperty property in sentData["values"][0])
             {
-                if (property.Name != "timestamp" && ((string)property.Value != (string)response.Property(property.Name).Value))
+                if (property.Name != "Timestamp" && ((string)property.Value != (string)response.Property(property.Name).Value))
                     success = false;
             }
 
@@ -189,7 +189,7 @@ namespace OMF_APITests
                 string key = split[0];
                 foreach (JProperty property in sentData["values"][0])
                 {
-                    if (property.Name != "timestamp" && ((string)property.Value != (string)response))
+                    if (property.Name != "Timestamp" && ((string)property.Value != (string)response))
                         success = false;
                 }
             }
@@ -208,11 +208,11 @@ namespace OMF_APITests
 
             // add headers to request
             request.Headers.Add("Accept-Verbosity", "verbose");
-            if (endpoint.endpoint_type == "OCS")
+            if (string.Equals(endpoint.endpointType, "OCS"))
             {
                 request.Headers.Add("Authorization", "Bearer " + OMF_API.Program.getToken(endpoint));
             }
-            else if (endpoint.endpoint_type == "PI")
+            else if (string.Equals(endpoint.endpointType, "PI"))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
                 request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", endpoint.username, endpoint.password))));

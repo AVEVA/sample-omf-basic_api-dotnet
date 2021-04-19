@@ -28,7 +28,7 @@ variables:
   - template: '/miscellaneous/build_templates/variables.yml@templates'
   - name: CredFile
     value: appsettings.json
-  - name: CredFileLibrary
+  - name: CredFileLibraryPI
     value: product-readiness.omf-basic_api-dotnet.ocs.json
   - name: CredFileLibraryOP
     value: product-readiness.omf-basic_api-dotnet.pi.json
@@ -46,7 +46,7 @@ jobs:
       - template: '/miscellaneous/build_templates/config.yml@templates'
         parameters:
           fileOriginal: $(CredFile)
-          fileLibrary: $(CredFileLibrary)
+          fileLibrary: $(CredFileLibraryPI)
           filePath: /OMF_API
 
       - task: DotNetCoreCLI@2

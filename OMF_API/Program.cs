@@ -19,6 +19,9 @@ namespace OMF_API
         // The version of the OMFmessages
         static string omfVersion = "1.1";
 
+        // Constant for determining the pause between sending OMF data messages
+        static int SEND_SLEEP = 1000;
+
         // Holders for the data message values
         static Random rnd = new Random();
         static bool dynamicBoolHolder = true;
@@ -58,11 +61,9 @@ namespace OMF_API
                 // Send out the messages that only need to be sent once
                 foreach (var endpoint in endpoints)
                 {
-                    if ((endpoint.verify_ssl is bool) && (bool)endpoint.verify_ssl == false)
+                    if ((endpoint.verifySSL is bool) && (bool)endpoint.verifySSL == false)
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
 
-
-                    getToken(endpoint);
 
                     // Step 5 - Send OMF Types
                     foreach (var omfType in omfTypes)
@@ -108,7 +109,7 @@ namespace OMF_API
                     }
 
                     count++;
-                    Thread.Sleep(1000);
+                    Thread.Sleep(SEND_SLEEP);
                 }
 
             }
@@ -144,11 +145,13 @@ namespace OMF_API
         {
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json"));
 
-            // check for optional/nullable parameters
+            // check for optional/nullable parameters and invalid endpoint types
             foreach (var endpoint in settings.endpoints)
             {
-                if (endpoint.verify_ssl == null)
-                    endpoint.verify_ssl = true;
+                if (endpoint.verifySSL == null)
+                    endpoint.verifySSL = true;
+                if (string.Equals(endpoint.endpointType, "OCS") || string.Equals(endpoint.endpointType, "EDS") || string.Equals(endpoint.endpointType, "PI"))
+                    throw new Exception($"Invalid endpoint type {endpoint.endpointType}");
             }
 
             return settings;
@@ -170,12 +173,12 @@ namespace OMF_API
         /// <returns></returns>
         public static void getData(dynamic data)
         {
-            if (data.containerid == "Container1" || data.containerid == "Container2")
+            if (string.Equals(data.containerid, "Container1") || string.Equals(data.containerid, "Container2"))
             {
                 data.values[0].timestamp = getCurrentTime();
                 data.values[0].IntegerProperty = (int)(rnd.NextDouble() * 100);
             }
-            else if (data.containerid == "Container3")
+            else if (string.Equals(data.containerid, "Container3"))
             {
                 dynamicBoolHolder = !dynamicBoolHolder;
                 data.values[0].timestamp = getCurrentTime();
@@ -183,7 +186,7 @@ namespace OMF_API
                 data.values[0].NumberProperty2 = rnd.NextDouble() * 100;
                 data.values[0].StringEnum = dynamicBoolHolder.ToString();
             }
-            else if (data.containerid == "Container4")
+            else if (string.Equals(data.containerid, "Container4"))
             {
                 dynamicIntHolder = (dynamicIntHolder + 1) % 2;
                 data.values[0].timestamp = getCurrentTime();
@@ -200,7 +203,7 @@ namespace OMF_API
         public static string getToken(Endpoint endpoint)
         {
             // PI and EDS currently require no auth
-            if (endpoint.endpoint_type != "OCS")
+            if (endpoint.endpointType != "OCS")
                 return null;
 
             //use cached version
@@ -219,8 +222,8 @@ namespace OMF_API
 
             var data = new Dictionary<string, string>
             {
-               { "client_id", endpoint.client_id },
-               { "client_secret", endpoint.client_secret },
+               { "client_id", endpoint.clientId },
+               { "client_secret", endpoint.clientSecret },
                { "grant_type", "client_credentials" }
             };
 
@@ -293,7 +296,7 @@ namespace OMF_API
         public static void sendMessageToOmfEndpoint(Endpoint endpoint, string messageType, string dataJson, string action = "create")
         {
             // create a request
-            WebRequest request = WebRequest.Create(new Uri(endpoint.getOmfEndpoint()));
+            WebRequest request = WebRequest.Create(new Uri(endpoint.omf_endpoint));
             request.Method = "post";
 
             // add headers to request
@@ -301,11 +304,11 @@ namespace OMF_API
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "JSON");
             request.Headers.Add("omfversion", omfVersion);
-            if (endpoint.endpoint_type == "OCS")
+            if (string.Equals(endpoint.endpointType, "OCS"))
             {
                 request.Headers.Add("Authorization", "Bearer " + getToken(endpoint));
             }
-            else if (endpoint.endpoint_type == "PI")
+            else if (string.Equals(endpoint.endpointType, "PI"))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
                 request.Credentials = new NetworkCredential(endpoint.username, endpoint.password);
@@ -315,7 +318,7 @@ namespace OMF_API
             byte[] byteArray;
 
 
-            if (!endpoint.use_compression)
+            if (!endpoint.useCompression)
             {
                 request.ContentType = "application/json";
                 byteArray = Encoding.UTF8.GetBytes(dataJson);
