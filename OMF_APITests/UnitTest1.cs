@@ -165,7 +165,7 @@ namespace OMF_APITests
                     // delete types
                     foreach (var omfType in omfTypes)
                     {
-                        string omfTypeString = $"[{JsonConvert.SerializeObject(omfType.id)}]";
+                        string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
                         OMF_API.Program.sendMessageToOmfEndpoint(endpoint, "type", omfTypeString, "delete");
                     }
                 }

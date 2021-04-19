@@ -173,12 +173,12 @@ namespace OMF_API
         /// <returns></returns>
         public static void getData(dynamic data)
         {
-            if (data.containerid == "Container1" || data.containerid == "Container2")
+            if (data.containerid == "Container1.0" || data.containerid == "Container2.0")
             {
                 data.values[0].Timestamp = getCurrentTime();
                 data.values[0].IntegerProperty = (int)(rnd.NextDouble() * 100);
             }
-            else if (data.containerid == "Container3")
+            else if (data.containerid == "Container3.0")
             {
                 dynamicBoolHolder = !dynamicBoolHolder;
                 data.values[0].Timestamp = getCurrentTime();
@@ -186,7 +186,7 @@ namespace OMF_API
                 data.values[0].NumberProperty2 = rnd.NextDouble() * 100;
                 data.values[0].StringEnum = dynamicBoolHolder.ToString();
             }
-            else if (data.containerid == "Container4")
+            else if (data.containerid == "Container4.0")
             {
                 dynamicIntHolder = (dynamicIntHolder + 1) % 2;
                 data.values[0].Timestamp = getCurrentTime();
