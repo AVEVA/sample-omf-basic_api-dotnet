@@ -1,18 +1,18 @@
 [
   {
-    "id": "Container1.0",
+    "id": "FirstContainer",
     "typeid": "FirstDynamicType"
   },
   {
-    "id": "Container2.0",
+    "id": "SecondContainer",
     "typeid": "FirstDynamicType"
   },
   {
-    "id": "Container3.0",
+    "id": "ThirdContainer",
     "typeid": "SecondDynamicType"
   },
   {
-    "id": "Container4.0",
+    "id": "FourthContainer",
     "typeid": "ThirdDynamicType"
   }
 ]

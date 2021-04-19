@@ -1,6 +1,6 @@
 [
   {
-    "containerid": "Container1.0",
+    "containerid": "FirstContainer",
     "values": [
       {
         "Timestamp": null,
@@ -9,7 +9,7 @@
     ]
   },
   {
-    "containerid": "Container2.0",
+    "containerid": "SecondContainer",
     "values": [
       {
         "Timestamp": null,
@@ -18,7 +18,7 @@
     ]
   },
   {
-    "containerid": "Container3.0",
+    "containerid": "ThirdContainer",
     "values": [
       {
         "Timestamp": null,
@@ -29,7 +29,7 @@
     ]
   },
   {
-    "containerid": "Container4.0",
+    "containerid": "FourthContainer",
     "values": [
       {
         "Timestamp": null,

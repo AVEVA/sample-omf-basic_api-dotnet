@@ -173,12 +173,12 @@ namespace OMF_API
         /// <returns></returns>
         public static void getData(dynamic data)
         {
-            if (data.containerid == "Container1.0" || data.containerid == "Container2.0")
+            if (data.containerid == "FirstContainer" || data.containerid == "SecondContainer")
             {
                 data.values[0].Timestamp = getCurrentTime();
                 data.values[0].IntegerProperty = (int)(rnd.NextDouble() * 100);
             }
-            else if (data.containerid == "Container3.0")
+            else if (data.containerid == "ThirdContainer")
             {
                 dynamicBoolHolder = !dynamicBoolHolder;
                 data.values[0].Timestamp = getCurrentTime();
@@ -186,7 +186,7 @@ namespace OMF_API
                 data.values[0].NumberProperty2 = rnd.NextDouble() * 100;
                 data.values[0].StringEnum = dynamicBoolHolder.ToString();
             }
-            else if (data.containerid == "Container4.0")
+            else if (data.containerid == "FourthContainer")
             {
                 dynamicIntHolder = (dynamicIntHolder + 1) % 2;
                 data.values[0].Timestamp = getCurrentTime();
@@ -267,22 +267,37 @@ namespace OMF_API
         /// <returns></returns>
         public static string Send(WebRequest request)
         {
-            using (var resp = request.GetResponse())
+            try
             {
-                using (HttpWebResponse response = (HttpWebResponse)resp)
+                using (var resp = request.GetResponse())
                 {
-
-                    var stream = resp.GetResponseStream();
-                    var code = (int)response.StatusCode;
-
-                    using (StreamReader reader = new StreamReader(stream))
+                    using (HttpWebResponse response = (HttpWebResponse)resp)
                     {
-                        // Read the content.  
-                        string responseString = reader.ReadToEnd();
-                        // Display the content.  
 
-                        return responseString;
+                        var stream = resp.GetResponseStream();
+                        var code = (int)response.StatusCode;
+
+                        using (StreamReader reader = new StreamReader(stream))
+                        {
+                            // Read the content.  
+                            string responseString = reader.ReadToEnd();
+                            // Display the content.  
+
+                            return responseString;
+                        }
                     }
+                }
+            }
+            catch (WebException e)
+            {
+                using (WebResponse response = e.Response)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)response;
+
+                    // catch 409 errors as they indicate that the Type already exists
+                    if (httpResponse.StatusCode == HttpStatusCode.Conflict)
+                        return "";
+                    throw;
                 }
             }
         }
