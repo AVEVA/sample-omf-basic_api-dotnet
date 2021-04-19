@@ -16,6 +16,7 @@ namespace OMF_APITests
         [Fact]
         public void Test1()
         {
+            cleanup();
             // Steps 1 to 7 - Run the main program
             Dictionary<string, dynamic> sentData = new Dictionary<string, dynamic>();
             Assert.True(OMF_API.Program.runMain(true, sentData));
@@ -66,12 +67,22 @@ namespace OMF_APITests
                                 //check that the response was good and that data was written to the point
                                 JToken name = endValue.SelectToken("Name");
                                 if (!response.IsSuccessStatusCode)
+                                {
                                     success = false;
+                                    Console.WriteLine($"Unable to find name {name}");
+                                }  
                                 else if (name != null && string.Equals(endValue.Name, "Pt Created"))
+                                {
                                     success = false;
+                                    Console.WriteLine($"{name} has no recorded data");
+                                }
+                                    
                                 // compare the returned data to what was sent
                                 if (!compareData((string)item.Name, endValue, sentData[(string)omfContainer.id]))
+                                {
                                     success = false;
+                                    Console.WriteLine($"{name}'s data does not match what was sent");
+                                }
                             }
                         }
                     }
@@ -82,7 +93,10 @@ namespace OMF_APITests
                         {
                             HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Types/{omfType.id}").Result;
                             if (!response.IsSuccessStatusCode)
+                            {
+                                Console.WriteLine($"Unable to find type {omfType.id}");
                                 success = false;
+                            }
                         }
 
                         // retrieve containers and check response
@@ -90,7 +104,10 @@ namespace OMF_APITests
                         {
                             HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Streams/{omfContainer.id}").Result;
                             if (!response.IsSuccessStatusCode)
+                            {
                                 success = false;
+                                Console.WriteLine($"Unable to find container {omfContainer.id}");
+                            }
                         }
 
                         // retrieve most recent data and check response
@@ -100,9 +117,15 @@ namespace OMF_APITests
                             string responseString = response.Content.ReadAsStringAsync().Result;
                             string content = response.Content.ReadAsStringAsync().Result;
                             if (!response.IsSuccessStatusCode || string.Equals(responseString, ""))
+                            {
                                 success = false;
+                                Console.WriteLine($"{omfDatum.id} has no recorded data");
+                            }
                             else if (!compareData(JsonConvert.DeserializeObject(content), sentData[(string)omfDatum.containerid]))
+                            {
                                 success = false;
+                                Console.WriteLine($"Data in {omfDatum.id} does not match what was sent");
+                            }      
                         }
 
                     }
@@ -142,7 +165,7 @@ namespace OMF_APITests
                     // delete types
                     foreach (var omfType in omfTypes)
                     {
-                        string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
+                        string omfTypeString = $"[{JsonConvert.SerializeObject(omfType.id)}]";
                         OMF_API.Program.sendMessageToOmfEndpoint(endpoint, "type", omfTypeString, "delete");
                     }
                 }

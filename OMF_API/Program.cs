@@ -175,13 +175,13 @@ namespace OMF_API
         {
             if (data.containerid == "Container1" || data.containerid == "Container2")
             {
-                data.values[0].timestamp = getCurrentTime();
+                data.values[0].Timestamp = getCurrentTime();
                 data.values[0].IntegerProperty = (int)(rnd.NextDouble() * 100);
             }
             else if (data.containerid == "Container3")
             {
                 dynamicBoolHolder = !dynamicBoolHolder;
-                data.values[0].timestamp = getCurrentTime();
+                data.values[0].Timestamp = getCurrentTime();
                 data.values[0].NumberProperty1 = rnd.NextDouble() * 100;
                 data.values[0].NumberProperty2 = rnd.NextDouble() * 100;
                 data.values[0].StringEnum = dynamicBoolHolder.ToString();
@@ -189,7 +189,7 @@ namespace OMF_API
             else if (data.containerid == "Container4")
             {
                 dynamicIntHolder = (dynamicIntHolder + 1) % 2;
-                data.values[0].timestamp = getCurrentTime();
+                data.values[0].Timestamp = getCurrentTime();
                 data.values[0].IntegerEnum = dynamicIntHolder;
             }
             else
@@ -254,8 +254,7 @@ namespace OMF_API
 
             var responseString = await response.Content.ReadAsStringAsync();
 
-            // check status code and ignore conflicts which indicate that a type with the specified ID and version already exists
-            if (!response.IsSuccessStatusCode && response.StatusCode != HttpStatusCode.Conflict)
+            if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error sending OMF response code:{response.StatusCode}.  Response {responseString}");
             return responseString;
         }
