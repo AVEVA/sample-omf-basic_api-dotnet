@@ -16,7 +16,6 @@ namespace OMF_APITests
         [Fact]
         public void Test1()
         {
-            cleanup();
             // Steps 1 to 7 - Run the main program
             Dictionary<string, dynamic> sentData = new Dictionary<string, dynamic>();
             Assert.True(OMF_API.Program.runMain(true, sentData));
