@@ -43,7 +43,7 @@ namespace OMF_API
 
             // Step 1 - Read endpoint configurations from config.json
             AppSettings settings = getAppSettings();
-            IList<Endpoint> endpoints = settings.endpoints;
+            IList<Endpoint> endpoints = settings.Endpoints;
 
             // Step 2 - Get OMF Types
             dynamic omfTypes = getJsonFile("OMF-Types.json");
@@ -61,7 +61,7 @@ namespace OMF_API
                 // Send out the messages that only need to be sent once
                 foreach (var endpoint in endpoints)
                 {
-                    if ((endpoint.verifySSL is bool) && (bool)endpoint.verifySSL == false)
+                    if ((endpoint.VerifySSL is bool) && (bool)endpoint.VerifySSL == false)
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
 
 
@@ -146,12 +146,12 @@ namespace OMF_API
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json"));
 
             // check for optional/nullable parameters and invalid endpoint types
-            foreach (var endpoint in settings.endpoints)
+            foreach (var endpoint in settings.Endpoints)
             {
-                if (endpoint.verifySSL == null)
-                    endpoint.verifySSL = true;
-                if (!(string.Equals(endpoint.endpointType, "OCS") || string.Equals(endpoint.endpointType, "EDS") || string.Equals(endpoint.endpointType, "PI")))
-                    throw new Exception($"Invalid endpoint type {endpoint.endpointType}");
+                if (endpoint.VerifySSL == null)
+                    endpoint.VerifySSL = true;
+                if (!(string.Equals(endpoint.EndpointType, "OCS") || string.Equals(endpoint.EndpointType, "EDS") || string.Equals(endpoint.EndpointType, "PI")))
+                    throw new Exception($"Invalid endpoint type {endpoint.EndpointType}");
             }
 
             return settings;
@@ -203,17 +203,17 @@ namespace OMF_API
         public static string getToken(Endpoint endpoint)
         {
             // PI and EDS currently require no auth
-            if (endpoint.endpointType != "OCS")
+            if (endpoint.EndpointType != "OCS")
                 return null;
 
             //use cached version
-            if (!String.IsNullOrWhiteSpace(endpoint.token))
-                return endpoint.token;
+            if (!String.IsNullOrWhiteSpace(endpoint.Token))
+                return endpoint.Token;
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 Method = HttpMethod.Get,
-                RequestUri = new Uri(endpoint.resource + "/identity/.well-known/openid-configuration")
+                RequestUri = new Uri(endpoint.Resource + "/identity/.well-known/openid-configuration")
             };
             request.Headers.Add("Accept", "application/json");
 
@@ -222,8 +222,8 @@ namespace OMF_API
 
             var data = new Dictionary<string, string>
             {
-               { "client_id", endpoint.clientId },
-               { "client_secret", endpoint.clientSecret },
+               { "client_id", endpoint.ClientId },
+               { "client_secret", endpoint.ClientSecret },
                { "grant_type", "client_credentials" }
             };
 
@@ -239,8 +239,8 @@ namespace OMF_API
             string res2 = Send(request2).Result;
 
             var tokenObject = JsonConvert.DeserializeObject<JObject>(res2);
-            endpoint.token = tokenObject["access_token"].ToString();
-            return endpoint.token;
+            endpoint.Token = tokenObject["access_token"].ToString();
+            return endpoint.Token;
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace OMF_API
         public static void sendMessageToOmfEndpoint(Endpoint endpoint, string messageType, string dataJson, string action = "create")
         {
             // create a request
-            WebRequest request = WebRequest.Create(new Uri(endpoint.omf_endpoint));
+            WebRequest request = WebRequest.Create(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
 
             // add headers to request
@@ -320,21 +320,21 @@ namespace OMF_API
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "JSON");
             request.Headers.Add("omfversion", omfVersion);
-            if (string.Equals(endpoint.endpointType, "OCS"))
+            if (string.Equals(endpoint.EndpointType, "OCS"))
             {
                 request.Headers.Add("Authorization", "Bearer " + getToken(endpoint));
             }
-            else if (string.Equals(endpoint.endpointType, "PI"))
+            else if (string.Equals(endpoint.EndpointType, "PI"))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(endpoint.username, endpoint.password);
+                request.Credentials = new NetworkCredential(endpoint.Username, endpoint.Password);
             }
 
             // compress dataJson if configured for compression
             byte[] byteArray;
 
 
-            if (!endpoint.useCompression)
+            if (!endpoint.UseCompression)
             {
                 request.ContentType = "application/json";
                 byteArray = Encoding.UTF8.GetBytes(dataJson);

@@ -7,7 +7,7 @@ namespace OMF_API
         /// <summary>
         /// The list of endpoints to connect and send to
         /// </summary>
-        public IList<Endpoint> endpoints { get; set; }
+        public IList<Endpoint> Endpoints { get; set; }
     }
 
     public class Endpoint
@@ -15,105 +15,105 @@ namespace OMF_API
         /// <summary>
         /// The endpoint type. This will be OCS, EDS, or PI
         /// </summary>
-        public string endpointType { get; set; }
+        public string EndpointType { get; set; }
 
         /// <summary>
         /// The base endpoint. E.g. https://dat-b.osisoft.com for OCS
         /// </summary>
-        public string resource { get; set; }
+        public string Resource { get; set; }
 
         /// <summary>
         /// The name of the Namespace in OCS that is being sent to
         /// </summary>
-        public string namespaceName { get; set; }
+        public string NamespaceName { get; set; }
 
         /// <summary>
         /// The name of the Tenant ID of the Tenant in OCS that is being sent to
         /// </summary>
-        public string tenant { get; set; }
+        public string Tenant { get; set; }
 
         /// <summary>
         /// The client ID that is being used for authenticating to OCS
         /// </summary>
-        public string clientId { get; set; }
+        public string ClientId { get; set; }
 
         /// <summary>
         /// The client secret that is being used for authenticating to OCS
         /// </summary>
-        public string clientSecret { get; set; }
+        public string ClientSecret { get; set; }
 
         /// <summary>
         /// The API version of the endpoint
         /// </summary>
-        public string apiVersion { get; set; }
+        public string ApiVersion { get; set; }
 
         /// <summary>
         /// A feature flag for verifying SSL when connecting to the endpoint
         /// </summary>
-        public object verifySSL { get; set; }
+        public object VerifySSL { get; set; }
 
         /// <summary>
         /// A feature flag for enabling compression on messages send to endpoint
         /// </summary>
-        public bool useCompression { get; set; }
+        public bool UseCompression { get; set; }
 
         /// <summary>
         /// An optional timeout setting for web requests
         /// </summary>
-        public int webRequestTimeoutSeconds { get; set; }
+        public int WebRequestTimeoutSeconds { get; set; }
 
         /// <summary>
         /// The name of the PI Data Archive that is being sent to
         /// </summary>
-        public string dataServerName { get; set; }
+        public string DataServerName { get; set; }
 
         /// <summary>
         /// The username that is being used for authenticating to the PI Web API
         /// </summary>
-        public string username { get; set; }
+        public string Username { get; set; }
 
         /// <summary>
         /// The password that is being used for authenticating to the PI Web API
         /// </summary>
-        public string password { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
         /// The token used to authenticate to an OCS endpoint
         /// </summary>
-        public string token { get; set; }
+        public string Token { get; set; }
 
         /// <summary>
         /// returns the base endpoint URL of endpoint
         /// </summary>
-        public string baseEndpoint
+        public string BaseEndpoint
         {
             get
             {
-                string baseEndpoint = "";
+                string BaseEndpoint = "";
 
-                if (string.Equals(this.endpointType, "OCS"))
+                if (string.Equals(this.EndpointType, "OCS"))
                 {
-                    baseEndpoint = $"{this.resource}/api/{this.apiVersion}/tenants/{this.tenant}/namespaces/{this.namespaceName}";
+                    BaseEndpoint = $"{this.Resource}/api/{this.ApiVersion}/tenants/{this.Tenant}/namespaces/{this.NamespaceName}";
                 }
-                else if (string.Equals(this.endpointType, "EDS"))
+                else if (string.Equals(this.EndpointType, "EDS"))
                 {
-                    baseEndpoint = $"{this.resource}/api/{this.apiVersion}/tenants/default/namespaces/default";
+                    BaseEndpoint = $"{this.Resource}/api/{this.ApiVersion}/tenants/default/namespaces/default";
                 }
-                else if (string.Equals(this.endpointType, "PI"))
+                else if (string.Equals(this.EndpointType, "PI"))
                 {
-                    baseEndpoint = this.resource;
+                    BaseEndpoint = this.Resource;
                 }
 
-                return baseEndpoint;
+                return BaseEndpoint;
             }
         }
 
         /// <summary>
         /// returns the omf endpoint URL of endpoint
         /// </summary>
-        public string omf_endpoint
+        public string OmfEndpoint
         {
-            get { return $"{this.baseEndpoint}/omf"; }
+            get { return $"{this.BaseEndpoint}/omf"; }
         }
     }
 }

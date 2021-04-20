@@ -28,7 +28,7 @@ namespace OMF_APITests
         private bool checkCreations(Dictionary<string, dynamic> sentData)
         {
             AppSettings settings = OMF_API.Program.getAppSettings();
-            IList<Endpoint> endpoints = settings.endpoints;
+            IList<Endpoint> endpoints = settings.Endpoints;
             dynamic omfTypes = OMF_API.Program.getJsonFile("OMF-Types.json");
             dynamic omfContainers = OMF_API.Program.getJsonFile("OMF-Containers.json");
             dynamic omfData = OMF_API.Program.getJsonFile("OMF-Data.json");
@@ -39,10 +39,10 @@ namespace OMF_APITests
             {
                 try
                 {
-                    if (string.Equals(endpoint.endpointType, "PI"))
+                    if (string.Equals(endpoint.EndpointType, "PI"))
                     {
                         // get point URLs
-                        HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/dataservers?name={endpoint.dataServerName}").Result;
+                        HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/dataservers?name={endpoint.DataServerName}").Result;
                         string content = response.Content.ReadAsStringAsync().Result;
                         dynamic dynamicJson = JsonConvert.DeserializeObject(content);
                         string pointsURL = dynamicJson.Links.Points;
@@ -90,7 +90,7 @@ namespace OMF_APITests
                         // retrieve types and check response
                         foreach (var omfType in omfTypes)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Types/{omfType.id}").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Types/{omfType.id}").Result;
                             if (!response.IsSuccessStatusCode)
                             {
                                 Console.WriteLine($"Unable to find type {omfType.id}");
@@ -101,7 +101,7 @@ namespace OMF_APITests
                         // retrieve containers and check response
                         foreach (var omfContainer in omfContainers)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Streams/{omfContainer.id}").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Streams/{omfContainer.id}").Result;
                             if (!response.IsSuccessStatusCode)
                             {
                                 success = false;
@@ -112,7 +112,7 @@ namespace OMF_APITests
                         // retrieve most recent data and check response
                         foreach (var omfDatum in omfData)
                         {
-                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.baseEndpoint}/Streams/{omfDatum.containerid}/Data/last").Result;
+                            HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Streams/{omfDatum.containerid}/Data/last").Result;
                             string responseString = response.Content.ReadAsStringAsync().Result;
                             string content = response.Content.ReadAsStringAsync().Result;
                             if (!response.IsSuccessStatusCode || string.Equals(responseString, ""))
@@ -143,7 +143,7 @@ namespace OMF_APITests
         private bool cleanup()
         {
             AppSettings settings = OMF_API.Program.getAppSettings();
-            IList<Endpoint> endpoints = settings.endpoints;
+            IList<Endpoint> endpoints = settings.Endpoints;
             dynamic omfTypes = OMF_API.Program.getJsonFile("OMF-Types.json");
             dynamic omfContainers = OMF_API.Program.getJsonFile("OMF-Containers.json");
             dynamic omfData = OMF_API.Program.getJsonFile("OMF-Data.json");
@@ -230,14 +230,14 @@ namespace OMF_APITests
 
             // add headers to request
             request.Headers.Add("Accept-Verbosity", "verbose");
-            if (string.Equals(endpoint.endpointType, "OCS"))
+            if (string.Equals(endpoint.EndpointType, "OCS"))
             {
                 request.Headers.Add("Authorization", "Bearer " + OMF_API.Program.getToken(endpoint));
             }
-            else if (string.Equals(endpoint.endpointType, "PI"))
+            else if (string.Equals(endpoint.EndpointType, "PI"))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", endpoint.username, endpoint.password))));
+                request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", endpoint.Username, endpoint.Password))));
             }
 
             //return JsonConvert.DeserializeObject(OMF_API.Program.Send(request).Result);

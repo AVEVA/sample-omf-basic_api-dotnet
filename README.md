@@ -55,73 +55,73 @@ The format of the configuration for an OCS endpoint is shown below along with de
 
 ```json
 {
-  "endpointType": "OCS",
-  "resource": "https://dat-b.osisoft.com",
-  "namespaceName": "REPLACE_WITH_NAMESPACE_NAME",
-  "tenant": "RPLACE_WITH_TENANT_ID",
+  "EndpointType": "OCS",
+  "Resource": "https://dat-b.osisoft.com",
+  "NamespaceName": "REPLACE_WITH_NAMESPACE_NAME",
+  "Tenant": "RPLACE_WITH_TENANT_ID",
   "clientId": "REPLACE_WITH_APPLICATION_IDENTIFIER",
-  "clientSecret": "REPLACE_WITH_APPLICATION_SECRET",
-  "apiVersion": "v1",
-  "verifySSL": true,
-  "useCompression": false
+  "ClientSecret": "REPLACE_WITH_APPLICATION_SECRET",
+  "ApiVersion": "v1",
+  "VerifySSL": true,
+  "UseCompression": false
 }
 ```
 
 | Parameters                  | Required | Type    | Description                                                                                                                                                      |
 | --------------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| endpointType                | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
-| resource                    | required | string  | The endpoint for OCS if the namespace. If the tenant/namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
-| namespaceBame               | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
-| tenant                      | required | string  | The Tenant ID of the Tenant in OCS that is being sent to                                                                                                         |
-| clientId                    | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
-| clientSecret                | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
-| apiVersion                  | required | string  | The API version of the OCS endpoint                                                                                                                              |
-| verifySSL                   | optional | boolean | A feature flag for verifying SSL when connecting to the OCS endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
-| useCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                     |
+| EendpointType                | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
+| Resource                    | required | string  | The endpoint for OCS if the namespace. If the tenant/namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
+| NamespaceBame               | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
+| Tenant                      | required | string  | The Tenant ID of the Tenant in OCS that is being sent to                                                                                                         |
+| ClientId                    | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
+| ClientSecret                | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
+| ApiVersion                  | required | string  | The API version of the OCS endpoint                                                                                                                              |
+| VerifySSL                   | optional | boolean | A feature flag for verifying SSL when connecting to the OCS endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
+| UseCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                     |
 
 ### EDS Endpoint Configurations
 The format of the configuration for an EDS endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
 {
-  "endpointType": "EDS",
-  "resource": "http://localhost:5590",
-  "apiVersion": "v1",
-  "useCompression": false
+  "EndpointType": "EDS",
+  "Resource": "http://localhost:5590",
+  "ApiVersion": "v1",
+  "UseCompression": false
 }
 ```
 
 | Parameters                  | Required | Type    | Description                                                                                                                                       |
 | --------------------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| endpointType                | required | string  | The endpoint type. For EDS this will always be "EDS"                                                                                              |
-| resource                    | required | string  | The endpoint for EDS if the namespace. If EDS is being run on your local machine with the default configuration, it will be http://localhost:5590 |
-| apiVersion                  | required | string  | The API version of the EDS endpoint                                                                                                               |
-| useCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                      |
+| EndpointType                | required | string  | The endpoint type. For EDS this will always be "EDS"                                                                                              |
+| Resource                    | required | string  | The endpoint for EDS if the namespace. If EDS is being run on your local machine with the default configuration, it will be http://localhost:5590 |
+| ApiVersion                  | required | string  | The API version of the EDS endpoint                                                                                                               |
+| UseCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                      |
 
 ### PI Endpoint Configuration
 The format of the configuration for a PI endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
 {
-  "endpointType": "PI",
-  "resource": "REPLACE_WITH_PI_WEB_API_URL",
-  "dataServerName": "REPLACE_WITH_DATA_ARCHIVE_NAME",
-  "username": "REPLACE_WITH_USERNAME",
-  "password": "REPLACE_WITH_PASSWORD",
-  "verifySSL": true,
-  "useCompression": false
+  "EndpointType": "PI",
+  "Resource": "REPLACE_WITH_PI_WEB_API_URL",
+  "DataServerName": "REPLACE_WITH_DATA_ARCHIVE_NAME",
+  "Username": "REPLACE_WITH_USERNAME",
+  "Password": "REPLACE_WITH_PASSWORD",
+  "VerifySSL": true,
+  "UseCompression": false
 }
 ```
 
 | Parameters                  | Required | Type           | Description                                                                                                                                                                                                                                                                             |
 | --------------------------- | -------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| endpointType                | required | string         | The endpoint type. For PI this will always be "PI"                                                                                                                                                                                                                                      |
-| resource                    | required | string         | The URL of the PI Web API                                                                                                                                                                                                                                                               |
-| dataServerName              | required | string         | The name of the PI Data Archive that is being sent to                                                                                                                                                                                                                                   |
-| username                    | required | string         | The username that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
-| password                    | required | string         | The password that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
-| verifySSL                   | optional | boolean/string | A feature flag for verifying SSL when connecting to the PI Web API. Alternatively, this can specify the path to a .pem certificate file if a self-signed certificate is being used by the PI Web API. By defualt this is set to true as it is strongly recommended that SSL be checked. |
-| useCompression              | optional | boolean        | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                                                                                                                                            |
+| EndpointType                | required | string         | The endpoint type. For PI this will always be "PI"                                                                                                                                                                                                                                      |
+| Resource                    | required | string         | The URL of the PI Web API                                                                                                                                                                                                                                                               |
+| DataServerName              | required | string         | The name of the PI Data Archive that is being sent to                                                                                                                                                                                                                                   |
+| Username                    | required | string         | The username that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
+| Password                    | required | string         | The password that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
+| VerifySSL                   | optional | boolean/string | A feature flag for verifying SSL when connecting to the PI Web API. Alternatively, this can specify the path to a .pem certificate file if a self-signed certificate is being used by the PI Web API. By defualt this is set to true as it is strongly recommended that SSL be checked. |
+| UseCompression              | optional | boolean        | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                                                                                                                                            |
 
 ---
 
