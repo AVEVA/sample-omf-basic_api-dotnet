@@ -39,7 +39,7 @@ namespace OMF_APITests
             {
                 try
                 {
-                    if (string.Equals(endpoint.EndpointType, "PI"))
+                    if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
                     {
                         // get point URLs
                         HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/dataservers?name={endpoint.DataServerName}").Result;
@@ -69,13 +69,13 @@ namespace OMF_APITests
                                 {
                                     success = false;
                                     Console.WriteLine($"Unable to find name {name}");
-                                }  
-                                else if (name != null && string.Equals(endValue.Name, "Pt Created"))
+                                }
+                                else if (name != null && string.Equals(endValue.Name, "Pt Created", StringComparison.OrdinalIgnoreCase))
                                 {
                                     success = false;
                                     Console.WriteLine($"{name} has no recorded data");
                                 }
-                                    
+
                                 // compare the returned data to what was sent
                                 if (!compareData((string)item.Name, endValue, sentData[(string)omfContainer.id]))
                                 {
@@ -115,7 +115,7 @@ namespace OMF_APITests
                             HttpResponseMessage response = sendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Streams/{omfDatum.containerid}/Data/last").Result;
                             string responseString = response.Content.ReadAsStringAsync().Result;
                             string content = response.Content.ReadAsStringAsync().Result;
-                            if (!response.IsSuccessStatusCode || string.Equals(responseString, ""))
+                            if (!response.IsSuccessStatusCode || string.IsNullOrEmpty(responseString))
                             {
                                 success = false;
                                 Console.WriteLine($"{omfDatum.id} has no recorded data");
@@ -124,7 +124,7 @@ namespace OMF_APITests
                             {
                                 success = false;
                                 Console.WriteLine($"Data in {omfDatum.id} does not match what was sent");
-                            }      
+                            }
                         }
 
                     }

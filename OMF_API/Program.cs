@@ -150,7 +150,7 @@ namespace OMF_API
             {
                 if (endpoint.VerifySSL == null)
                     endpoint.VerifySSL = true;
-                if (!(string.Equals(endpoint.EndpointType, "OCS") || string.Equals(endpoint.EndpointType, "EDS") || string.Equals(endpoint.EndpointType, "PI")))
+                if (!(string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))
                     throw new Exception($"Invalid endpoint type {endpoint.EndpointType}");
             }
 
@@ -320,11 +320,11 @@ namespace OMF_API
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "JSON");
             request.Headers.Add("omfversion", omfVersion);
-            if (string.Equals(endpoint.EndpointType, "OCS"))
+            if (string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("Authorization", "Bearer " + getToken(endpoint));
             }
-            else if (string.Equals(endpoint.EndpointType, "PI"))
+            else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
                 request.Credentials = new NetworkCredential(endpoint.Username, endpoint.Password);

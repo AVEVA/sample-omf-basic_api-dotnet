@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace OMF_API
 {
@@ -91,15 +92,15 @@ namespace OMF_API
             {
                 string BaseEndpoint = "";
 
-                if (string.Equals(this.EndpointType, "OCS"))
+                if (string.Equals(this.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
                 {
                     BaseEndpoint = $"{this.Resource}/api/{this.ApiVersion}/tenants/{this.Tenant}/namespaces/{this.NamespaceName}";
                 }
-                else if (string.Equals(this.EndpointType, "EDS"))
+                else if (string.Equals(this.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase))
                 {
                     BaseEndpoint = $"{this.Resource}/api/{this.ApiVersion}/tenants/default/namespaces/default";
                 }
-                else if (string.Equals(this.EndpointType, "PI"))
+                else if (string.Equals(this.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
                 {
                     BaseEndpoint = this.Resource;
                 }
