@@ -230,11 +230,11 @@ namespace OMF_APITests
 
             // add headers to request
             request.Headers.Add("Accept-Verbosity", "verbose");
-            if (string.Equals(endpoint.EndpointType, "OCS"))
+            if (string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("Authorization", "Bearer " + OMF_API.Program.getToken(endpoint));
             }
-            else if (string.Equals(endpoint.EndpointType, "PI"))
+            else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
                 request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.ASCIIEncoding.ASCII.GetBytes(string.Format("{0}:{1}", endpoint.Username, endpoint.Password))));
