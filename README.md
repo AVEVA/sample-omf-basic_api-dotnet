@@ -1,9 +1,9 @@
 # Building a .NET sample to send OMF to PI or OCS
 
-**Version**: 2.0.0
+**Version**: 2.0.1
 
-| OCS Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                        | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| OCS Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_OCS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_EDS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_OnPrem)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) |
 
 Developed against DotNet 5.0
@@ -33,15 +33,15 @@ This sample also doesn't use any help to build the JSON strings for the OMF mess
 
 ## Customizing the Application
 
-This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMF_API/OMF-Types.json), 
+This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMF_API/OMF-Types.json),
 [OMF-Containers.json](OMF_API/OMF-Containers.json), and [OMF-Data.json](OMF_API/OMF-Data.json) files respectively. Each one of these files contains an array of OMF json objects, which are
-created in the endpoints specified in [config.json](OMF_API/config-placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our 
-[OMF version 1.1 documentation](https://omf-docs.osisoft.com/documentation_v11/Whats_New.html).  
-  
-In addition to modifying the json files mentioned above, the get_data function in [program.py](OMF_API/program.py) should be updated to populate the OMF data messages specified in 
-[OMF-Data.json](OMF_API/OMF-Data.json) with data from your data source.  
-  
-Finally, if there are any other activities that you would like to be running continuously, this logic can be added under the while loop in the main() function of 
+created in the endpoints specified in [config.json](OMF_API/config-placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our
+[OMF version 1.1 documentation](https://omf-docs.osisoft.com/documentation_v11/Whats_New.html).
+
+In addition to modifying the json files mentioned above, the get_data function in [program.py](OMF_API/program.py) should be updated to populate the OMF data messages specified in
+[OMF-Data.json](OMF_API/OMF-Data.json) with data from your data source.
+
+Finally, if there are any other activities that you would like to be running continuously, this logic can be added under the while loop in the main() function of
 [program.py](OMF_API/program.py).
 
 ## Configure Endpoints and Authentication
@@ -70,19 +70,20 @@ The format of the configuration for an OCS endpoint is shown below along with de
 }
 ```
 
-| Parameters                  | Required | Type    | Description                                                                                                                                                      |
-| --------------------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| EendpointType                | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
-| Resource                    | required | string  | The endpoint for OCS if the namespace. If the tenant/namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
-| NamespaceBame               | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
-| Tenant                      | required | string  | The Tenant ID of the Tenant in OCS that is being sent to                                                                                                         |
-| ClientId                    | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
-| ClientSecret                | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
-| ApiVersion                  | required | string  | The API version of the OCS endpoint                                                                                                                              |
-| VerifySSL                   | optional | boolean | A feature flag for verifying SSL when connecting to the OCS endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
-| UseCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                     |
+| Parameters     | Required | Type    | Description                                                                                                                                                      |
+| -------------- | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EendpointType  | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
+| Resource       | required | string  | The endpoint for OCS if the namespace. If the tenant/namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
+| NamespaceBame  | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
+| Tenant         | required | string  | The Tenant ID of the Tenant in OCS that is being sent to                                                                                                         |
+| ClientId       | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
+| ClientSecret   | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
+| ApiVersion     | required | string  | The API version of the OCS endpoint                                                                                                                              |
+| VerifySSL      | optional | boolean | A feature flag for verifying SSL when connecting to the OCS endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
+| UseCompression | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                     |
 
 ### EDS Endpoint Configurations
+
 The format of the configuration for an EDS endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
@@ -94,14 +95,15 @@ The format of the configuration for an EDS endpoint is shown below along with de
 }
 ```
 
-| Parameters                  | Required | Type    | Description                                                                                                                                       |
-| --------------------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| EndpointType                | required | string  | The endpoint type. For EDS this will always be "EDS"                                                                                              |
-| Resource                    | required | string  | The endpoint for EDS if the namespace. If EDS is being run on your local machine with the default configuration, it will be http://localhost:5590 |
-| ApiVersion                  | required | string  | The API version of the EDS endpoint                                                                                                               |
-| UseCompression              | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                      |
+| Parameters     | Required | Type    | Description                                                                                                                                       |
+| -------------- | -------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EndpointType   | required | string  | The endpoint type. For EDS this will always be "EDS"                                                                                              |
+| Resource       | required | string  | The endpoint for EDS if the namespace. If EDS is being run on your local machine with the default configuration, it will be http://localhost:5590 |
+| ApiVersion     | required | string  | The API version of the EDS endpoint                                                                                                               |
+| UseCompression | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                      |
 
 ### PI Endpoint Configuration
+
 The format of the configuration for a PI endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
@@ -116,15 +118,15 @@ The format of the configuration for a PI endpoint is shown below along with desc
 }
 ```
 
-| Parameters                  | Required | Type           | Description                                                                                                                                                                                                                                                                             |
-| --------------------------- | -------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| EndpointType                | required | string         | The endpoint type. For PI this will always be "PI"                                                                                                                                                                                                                                      |
-| Resource                    | required | string         | The URL of the PI Web API                                                                                                                                                                                                                                                               |
-| DataServerName              | required | string         | The name of the PI Data Archive that is being sent to                                                                                                                                                                                                                                   |
-| Username                    | required | string         | The username that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
-| Password                    | required | string         | The password that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
-| VerifySSL                   | optional | boolean/string | A feature flag for verifying SSL when connecting to the PI Web API. Alternatively, this can specify the path to a .pem certificate file if a self-signed certificate is being used by the PI Web API. By defualt this is set to true as it is strongly recommended that SSL be checked. |
-| UseCompression              | optional | boolean        | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                                                                                                                                            |
+| Parameters     | Required | Type           | Description                                                                                                                                                                                                                                                                             |
+| -------------- | -------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| EndpointType   | required | string         | The endpoint type. For PI this will always be "PI"                                                                                                                                                                                                                                      |
+| Resource       | required | string         | The URL of the PI Web API                                                                                                                                                                                                                                                               |
+| DataServerName | required | string         | The name of the PI Data Archive that is being sent to                                                                                                                                                                                                                                   |
+| Username       | required | string         | The username that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
+| Password       | required | string         | The password that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
+| VerifySSL      | optional | boolean/string | A feature flag for verifying SSL when connecting to the PI Web API. Alternatively, this can specify the path to a .pem certificate file if a self-signed certificate is being used by the PI Web API. By defualt this is set to true as it is strongly recommended that SSL be checked. |
+| UseCompression | optional | boolean        | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                                                                                                                                            |
 
 ---
 

@@ -1,5 +1,9 @@
 # Version History
 
+## 2.0.1 / 2021-05-20
+
+- Updated dependencies
+
 ## 2.0.0 / 2021-04-19
 
 - Updated sample to make simpler and more readable
