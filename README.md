@@ -1,6 +1,6 @@
 # Building a .NET sample to send OMF to PI or OCS
 
-**Version**: 2.0.3
+**Version**: 2.0.4
 
 | OCS Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,35 +18,35 @@ This sample also doesn't use any help to build the JSON strings for the OMF mess
 
 [OMF documentation](https://omf-docs.osisoft.com/)
 
-## To Run this Sample in Visual Studio:
+## To Run this Sample in Visual Studio
 
 1. Clone the GitHub repository
-2. Open the solution file in Microsoft Visual Studio, [OMF_API.sln](OMF_API.sln)
-3. Rename the file [appsettings.placeholder.json](OMF_API/appsettings.placeholder.json) to appsettings.json
+2. Open the solution file in Microsoft Visual Studio, [OMFAPI.sln](OMFAPI.sln)
+3. Rename the file [appsettings.placeholder.json](OMFAPI/appsettings.placeholder.json) to appsettings.json
 4. Update appsettings.json with the credentials for the enpoint(s) you want to send to. See [Configure endpoints and authentication](#configure-endpoints-and-authentication) below for additional details
 5. Click **Debug** > **Start Debugging** (or F5)
 
-## To Test this Sample in Visual Studio:
+## To Test this Sample in Visual Studio
 
 1. Follow steps 1-4 from the section above
 2. Click **Test** > **Run All Tests** (or Ctrl+R, A)
 
 ## Customizing the Application
 
-This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMF_API/OMF-Types.json),
-[OMF-Containers.json](OMF_API/OMF-Containers.json), and [OMF-Data.json](OMF_API/OMF-Data.json) files respectively. Each one of these files contains an array of OMF json objects, which are
-created in the endpoints specified in [config.json](OMF_API/config-placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our
+This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMFAPI/OMF-Types.json),
+[OMF-Containers.json](OMFAPI/OMF-Containers.json), and [OMF-Data.json](OMFAPI/OMF-Data.json) files respectively. Each one of these files contains an array of OMF json objects, which are
+created in the endpoints specified in [config.json](OMFAPI/config-placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our
 [OMF version 1.1 documentation](https://omf-docs.osisoft.com/documentation_v11/Whats_New.html).
 
-In addition to modifying the json files mentioned above, the get_data function in [program.py](OMF_API/program.py) should be updated to populate the OMF data messages specified in
-[OMF-Data.json](OMF_API/OMF-Data.json) with data from your data source.
+In addition to modifying the json files mentioned above, the get_data function in [program.py](OMFAPI/program.py) should be updated to populate the OMF data messages specified in
+[OMF-Data.json](OMFAPI/OMF-Data.json) with data from your data source.
 
 Finally, if there are any other activities that you would like to be running continuously, this logic can be added under the while loop in the main() function of
-[program.py](OMF_API/program.py).
+[program.py](OMFAPI/program.py).
 
 ## Configure Endpoints and Authentication
 
-The sample is configured using the file [appsettings.placeholder.json](OMF_API/appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
+The sample is configured using the file [appsettings.placeholder.json](OMFAPI/appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
 
 The application can be configured to send to any number of endpoints specified in the endpoints array within appsettings.json. In addition, there are three types of endpoints: [OCS](#ocs-endpoint-configuration), [EDS](#eds-endpoint-configuration), and [PI](#pi-endpoint-configuration). Each of the 3 types of enpoints are configured differently and their configurations are explained in the sections below.
 

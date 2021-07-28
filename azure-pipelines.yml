@@ -47,7 +47,12 @@ jobs:
         parameters:
           fileOriginal: $(CredFile)
           fileLibrary: $(CredFileLibraryPI)
-          filePath: /OMF_API
+          filePath: /OMFAPI
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Nuget restore'
+        inputs:
+          command: restore
 
       - task: DotNetCoreCLI@2
         displayName: 'Run tests'
@@ -65,7 +70,12 @@ jobs:
         parameters:
           fileOriginal: $(CredFile)
           fileLibrary: $(CredFileLibraryOP)
-          filePath: /OMF_API
+          filePath: /OMFAPI
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Nuget restore'
+        inputs:
+          command: restore
 
       - task: DotNetCoreCLI@2
         displayName: 'Run tests'
@@ -73,7 +83,7 @@ jobs:
           command: test
           publishTestResults: true
           testRunTitle: '$(Agent.JobName) on $(Agent.OS)'
- 
+
   - job: Tests_EDS
     pool:
       name: 00-OSIManaged-Test
@@ -83,20 +93,30 @@ jobs:
         parameters:
           fileOriginal: $(CredFile)
           fileLibrary: $(CredFileLibraryEDS)
-          filePath: /OMF_API
-      
+          filePath: /OMFAPI
+
+      - task: DotNetCoreCLI@2
+        displayName: 'Nuget restore'
+        inputs:
+          command: restore
+
       - task: DotNetCoreCLI@2
         displayName: 'Run tests'
         inputs:
           command: test
           publishTestResults: true
           testRunTitle: '$(Agent.JobName) on $(Agent.OS)'
-     
+
   - job: Analysis
     pool:
       name: 00-OSIManaged-Containers
       demands: Agent.OS -equals Windows_NT
     steps:
+      - task: DotNetCoreCLI@2
+        displayName: 'Nuget restore'
+        inputs:
+          command: restore
+
       - task: DotNetCoreCLI@2
         displayName: 'Build'
         inputs:
