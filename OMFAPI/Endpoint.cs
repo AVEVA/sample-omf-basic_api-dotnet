@@ -62,7 +62,7 @@ namespace OMFAPI
         /// <summary>
         /// The name of the PI Data Archive that is being sent to
         /// </summary>
-        public string DataServerName { get; set; }
+        public string DataArchiveName { get; set; }
 
         /// <summary>
         /// The username that is being used for authenticating to the PI Web API
