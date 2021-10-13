@@ -5,6 +5,11 @@ namespace OMFAPI
     public class Endpoint
     {
         /// <summary>
+        /// Tells the application if the endpoint should be sent to
+        /// </summary>
+        public bool Selected { get; set; }
+
+        /// <summary>
         /// The endpoint type. This will be OCS, EDS, or PI
         /// </summary>
         public string EndpointType { get; set; }
