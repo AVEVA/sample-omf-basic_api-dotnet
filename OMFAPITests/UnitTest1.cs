@@ -153,7 +153,7 @@ namespace OMFAPITests
                     if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
                     {
                         // get point URLs
-                        HttpResponseMessage response = SendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/dataservers?name={endpoint.DataServerName}").Result;
+                        HttpResponseMessage response = SendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/dataservers?name={endpoint.DataArchiveName}").Result;
                         string content = response.Content.ReadAsStringAsync().Result;
                         dynamic dynamicJson = JsonConvert.DeserializeObject(content);
                         string pointsURL = dynamicJson.Links.Points;
