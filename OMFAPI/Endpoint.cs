@@ -22,12 +22,12 @@ namespace OMFAPI
         /// <summary>
         /// The name of the Namespace in OCS that is being sent to
         /// </summary>
-        public string NamespaceName { get; set; }
+        public string NamespaceId { get; set; }
 
         /// <summary>
         /// The name of the Tenant ID of the Tenant in OCS that is being sent to
         /// </summary>
-        public string Tenant { get; set; }
+        public string TenantId { get; set; }
 
         /// <summary>
         /// The client ID that is being used for authenticating to OCS
@@ -90,7 +90,7 @@ namespace OMFAPI
 
                 if (string.Equals(EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
                 {
-                    baseEndpoint = $"{Resource}/api/{ApiVersion}/tenants/{Tenant}/namespaces/{NamespaceName}";
+                    baseEndpoint = $"{Resource}/api/{ApiVersion}/tenants/{TenantId}/namespaces/{NamespaceId}";
                 }
                 else if (string.Equals(EndpointType, "EDS", StringComparison.OrdinalIgnoreCase))
                 {
