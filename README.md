@@ -55,7 +55,7 @@ The format of the configuration for an OCS endpoint is shown below along with de
   "EndpointType": "OCS",
   "Resource": "https://dat-b.osisoft.com",
   "NamespaceId": "PLACEHOLDER_REPLACE_WITH_NAMESPACE_ID",
-  "Tenant": "PLACEHOLDER_REPLACE_WITH_TENANT_ID",
+  "TenantId": "PLACEHOLDER_REPLACE_WITH__ID",
   "clientId": "PLACEHOLDER_REPLACE_WITH_CLIENT_ID",
   "ClientSecret": "PLACEHOLDER_REPLACE_WITH_CLIENT_SECRET",
   "ApiVersion": "v1",
@@ -69,9 +69,9 @@ The format of the configuration for an OCS endpoint is shown below along with de
 | ------------------------ | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Selected                 | required | boolean | Tells the application if the endpoint should be sent to                                                                                                          |
 | EndpointType             | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
-| Resource                 | required | string  | The endpoint for OCS if the namespace. If the tenant/namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
-| NamespaceID              | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
-| Tenant                   | required | string  | The Tenant ID of the Tenant in OCS that is being sent to                                                                                                         |
+| Resource                 | required | string  | The endpoint for OCS if the namespace. If the /namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
+| NamespaceId              | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
+| TenantId                 | required | string  | The  ID of the  in OCS that is being sent to                                                                                                         |
 | ClientId                 | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
 | ClientSecret             | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
 | ApiVersion               | required | string  | The API version of the OCS endpoint                                                                                                                              |

@@ -336,14 +336,13 @@ namespace OMFAPI
             // compress dataJson if configured for compression
             byte[] byteArray;
 
+            request.ContentType = "application/json";
             if (!endpoint.UseCompression)
             {
-                request.ContentType = "application/json";
                 byteArray = Encoding.UTF8.GetBytes(dataJson);
             }
             else
             {
-                request.ContentType = "application/x-www-form-urlencoded";
                 using (var msi = new MemoryStream(Encoding.UTF8.GetBytes(dataJson)))
                 using (var mso = new MemoryStream())
                 {
