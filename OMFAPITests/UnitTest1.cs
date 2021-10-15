@@ -103,9 +103,6 @@ namespace OMFAPITests
 
             foreach (var endpoint in endpoints)
             {
-                if (!endpoint.Selected)
-                    continue;
-
                 try
                 {
                     // delete containers
@@ -145,9 +142,6 @@ namespace OMFAPITests
 
             foreach (var endpoint in endpoints)
             {
-                if (!endpoint.Selected)
-                    continue;
-
                 try
                 {
                     if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -59,9 +60,6 @@ namespace OMFAPI
                 // Send out the messages that only need to be sent once
                 foreach (var endpoint in endpoints)
                 {
-                    if (!endpoint.Selected)
-                        continue;
-
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
 
@@ -98,9 +96,6 @@ namespace OMFAPI
 
                         foreach (var endpoint in endpoints)
                         {
-                            if (!endpoint.Selected)
-                                continue;
-
                             // send data
                             string omfDatumString = $"[{JsonConvert.SerializeObject(omfDatum)}]";
                             SendMessageToOmfEndpoint(endpoint, "data", omfDatumString);
@@ -144,12 +139,12 @@ namespace OMFAPI
         {
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json"));
 
+            IList<Endpoint> endpoints = settings.Endpoints;
+            settings.Endpoints = endpoints.Where(e => e.Selected).ToList();
+
             // check for optional/nullable parameters and invalid endpoint types
             foreach (var endpoint in settings.Endpoints)
             {
-                if (!endpoint.Selected)
-                    continue;
-
                 if (endpoint.VerifySSL == null)
                     endpoint.VerifySSL = true;
                 if (!(string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))

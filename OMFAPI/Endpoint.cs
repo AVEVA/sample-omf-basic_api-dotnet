@@ -20,12 +20,12 @@ namespace OMFAPI
         public string Resource { get; set; }
 
         /// <summary>
-        /// The name of the Namespace in OCS that is being sent to
+        /// The ID of the Namespace in OCS that is being sent to
         /// </summary>
         public string NamespaceId { get; set; }
 
         /// <summary>
-        /// The name of the Tenant ID of the Tenant in OCS that is being sent to
+        /// The ID of the Tenant in OCS that is being sent to
         /// </summary>
         public string TenantId { get; set; }
 
