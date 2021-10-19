@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -137,6 +138,9 @@ namespace OMFAPI
         public static AppSettings GetAppSettings()
         {
             AppSettings settings = JsonConvert.DeserializeObject<AppSettings>(File.ReadAllText(Directory.GetCurrentDirectory() + "/appsettings.json"));
+
+            IList<Endpoint> endpoints = settings.Endpoints;
+            settings.Endpoints = endpoints.Where(e => e.Selected).ToList();
 
             // check for optional/nullable parameters and invalid endpoint types
             foreach (var endpoint in settings.Endpoints)
@@ -327,14 +331,13 @@ namespace OMFAPI
             // compress dataJson if configured for compression
             byte[] byteArray;
 
+            request.ContentType = "application/json";
             if (!endpoint.UseCompression)
             {
-                request.ContentType = "application/json";
                 byteArray = Encoding.UTF8.GetBytes(dataJson);
             }
             else
             {
-                request.ContentType = "application/x-www-form-urlencoded";
                 using (var msi = new MemoryStream(Encoding.UTF8.GetBytes(dataJson)))
                 using (var mso = new MemoryStream())
                 {

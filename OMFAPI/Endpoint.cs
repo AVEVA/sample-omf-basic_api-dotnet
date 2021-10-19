@@ -5,6 +5,11 @@ namespace OMFAPI
     public class Endpoint
     {
         /// <summary>
+        /// Tells the application if the endpoint should be sent to
+        /// </summary>
+        public bool Selected { get; set; }
+
+        /// <summary>
         /// The endpoint type. This will be OCS, EDS, or PI
         /// </summary>
         public string EndpointType { get; set; }
@@ -15,14 +20,14 @@ namespace OMFAPI
         public string Resource { get; set; }
 
         /// <summary>
-        /// The name of the Namespace in OCS that is being sent to
+        /// The ID of the Namespace in OCS that is being sent to
         /// </summary>
-        public string NamespaceName { get; set; }
+        public string NamespaceId { get; set; }
 
         /// <summary>
-        /// The name of the Tenant ID of the Tenant in OCS that is being sent to
+        /// The ID of the Tenant in OCS that is being sent to
         /// </summary>
-        public string Tenant { get; set; }
+        public string TenantId { get; set; }
 
         /// <summary>
         /// The client ID that is being used for authenticating to OCS
@@ -57,7 +62,7 @@ namespace OMFAPI
         /// <summary>
         /// The name of the PI Data Archive that is being sent to
         /// </summary>
-        public string DataServerName { get; set; }
+        public string DataArchiveName { get; set; }
 
         /// <summary>
         /// The username that is being used for authenticating to the PI Web API
@@ -85,7 +90,7 @@ namespace OMFAPI
 
                 if (string.Equals(EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
                 {
-                    baseEndpoint = $"{Resource}/api/{ApiVersion}/tenants/{Tenant}/namespaces/{NamespaceName}";
+                    baseEndpoint = $"{Resource}/api/{ApiVersion}/tenants/{TenantId}/namespaces/{NamespaceId}";
                 }
                 else if (string.Equals(EndpointType, "EDS", StringComparison.OrdinalIgnoreCase))
                 {
