@@ -1,16 +1,19 @@
-# Building a .NET sample to send OMF to PI or OCS
+# Building a .NET sample to send OMF to PI or ADH
 
-**Version**: 2.0.10
+| :loudspeaker: **Notice**: Samples have been updated to reflect that they work on AVEVA Data Hub. The samples also work on OSIsoft Cloud Services unless otherwise noted. |
+| -----------------------------------------------------------------------------------------------|  
 
-| OCS Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
+**Version**: 2.0.11
+
+| ADH Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_OCS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_EDS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/osisoft.sample-omf-basic_api-dotnet?repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_OnPrem)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&repoName=osisoft%2Fsample-omf-basic_api-dotnet&branchName=main) |
+| [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_ADH)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_EDS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_OnPrem)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) |
 
 Developed against DotNet 5.0
 
 ## Building a sample with the rest calls directly
 
-The sample does not makes use of the OSIsoft Cloud Services Client Libraries.
+The sample does not makes use of the AVEVA Data Hub Client Libraries.
 
 The sample also does not use any libraries for connecting to PI. Generally a library will be easier to use.
 
@@ -41,19 +44,19 @@ In addition to modifying the json files mentioned above, the get_data function i
 
 The sample is configured using the file [appsettings.placeholder.json](appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
 
-The application can be configured to send to any number of endpoints specified in the endpoints array within appsettings.json. In addition, there are three types of endpoints: [OCS](#ocs-endpoint-configuration), [EDS](#eds-endpoint-configuration), and [PI](#pi-endpoint-configuration). Each of the 3 types of enpoints are configured differently and their configurations are explained in the sections below.
+The application can be configured to send to any number of endpoints specified in the endpoints array within appsettings.json. In addition, there are three types of endpoints: [ADH](#adh-endpoint-configuration), [EDS](#eds-endpoint-configuration), and [PI](#pi-endpoint-configuration). Each of the 3 types of enpoints are configured differently and their configurations are explained in the sections below.
 
-### OCS Endpoint Configuration
+### ADH Endpoint Configuration
 
-An OMF ingress client must be configured. On our [OSIsoft Learning](https://www.youtube.com/channel/UC333r4jIeHaY-rGgMjON54g) Channel on YouTube we have a video on [Ceating an OMF Connection](https://www.youtube.com/watch?v=52lAnkGC1IM).
+An OMF ingress client must be configured. On our [AVEVA Learning](https://www.youtube.com/channel/UC333r4jIeHaY-rGgMjON54g) Channel on YouTube we have a video on [Ceating an OMF Connection](https://www.youtube.com/watch?v=52lAnkGC1IM).
 
-The format of the configuration for an OCS endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
+The format of the configuration for an ADH endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
 {
   "Selected": true,
-  "EndpointType": "OCS",
-  "Resource": "https://dat-b.osisoft.com",
+  "EndpointType": "ADH",
+  "Resource": "https://uswe.datahub.connect.aveva.com",
   "NamespaceId": "PLACEHOLDER_REPLACE_WITH_NAMESPACE_ID",
   "TenantId": "PLACEHOLDER_REPLACE_WITH__ID",
   "clientId": "PLACEHOLDER_REPLACE_WITH_CLIENT_ID",
@@ -68,18 +71,18 @@ The format of the configuration for an OCS endpoint is shown below along with de
 | Parameters               | Required | Type    | Description                                                                                                                                                      |
 | ------------------------ | -------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Selected                 | required | boolean | Tells the application if the endpoint should be sent to                                                                                                          |
-| EndpointType             | required | string  | The endpoint type. For OCS this will always be "OCS"                                                                                                             |
-| Resource                 | required | string  | The endpoint for OCS if the namespace. If the /namespace is located in NA, it is https://dat-b.osisoft.com and if in EMEA, it is https://dat-d.osisoft.com |
-| NamespaceId              | required | string  | The name of the Namespace in OCS that is being sent to                                                                                                           |
-| TenantId                 | required | string  | The  ID of the  in OCS that is being sent to                                                                                                         |
-| ClientId                 | required | string  | The client ID that is being used for authenticating to OCS                                                                                                       |
-| ClientSecret             | required | string  | The client secret that is being used for authenticating to OCS                                                                                                   |
-| ApiVersion               | required | string  | The API version of the OCS endpoint                                                                                                                              |
-| VerifySSL                | optional | boolean | A feature flag for verifying SSL when connecting to the OCS endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
-| UseCompression           | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                     |
+| EndpointType             | required | string  | The endpoint type. For ADH this will always be "ADH"                                                                                                             |
+| Resource                 | required | string  | The endpoint for ADH if the namespace. If the /namespace is located in NA, it is https://uswe.datahub.connect.aveva.com and if in EMEA, it is https://euno.datahub.connect.aveva.com  |
+| NamespaceId              | required | string  | The name of the Namespace in ADH that is being sent to                                                                                                           |
+| TenantId                 | required | string  | The  ID of the  in ADH that is being sent to                                                                                                         |
+| ClientId                 | required | string  | The client ID that is being used for authenticating to ADH                                                                                                       |
+| ClientSecret             | required | string  | The client secret that is being used for authenticating to ADH                                                                                                   |
+| ApiVersion               | required | string  | The API version of the ADH endpoint                                                                                                                              |
+| VerifySSL                | optional | boolean | A feature flag for verifying SSL when connecting to the ADH endpoint. By defualt this is set to true as it is strongly recommended that SSL be checked           |
+| UseCompression           | optional | boolean | A feature flag for enabling compression on messages sent to the ADH endpoint                                                                                     |
 | WebRequestTimeoutSeconds | optional | integer | A feature flag for changing how long it takes for a request to time out                                                                                          |
 
-### EDS Endpoint Configurations
+### EDS Endpoint Configuration
 
 The format of the configuration for an EDS endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
@@ -99,7 +102,7 @@ The format of the configuration for an EDS endpoint is shown below along with de
 | EndpointType             | required | string  | The endpoint type. For EDS this will always be "EDS"                                                                                              |
 | Resource                 | required | string  | The endpoint for EDS if the namespace. If EDS is being run on your local machine with the default configuration, it will be http://localhost:5590 |
 | ApiVersion               | required | string  | The API version of the EDS endpoint                                                                                                               |
-| UseCompression           | optional | boolean | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                      |
+| UseCompression           | optional | boolean | A feature flag for enabling compression on messages sent to the ADH endpoint                                                                      |
 | WebRequestTimeoutSeconds | optional | integer | A feature flag for changing how long it takes for a request to time out                                                                           |
 
 ### PI Endpoint Configuration
@@ -128,7 +131,7 @@ The format of the configuration for a PI endpoint is shown below along with desc
 | Username                 | required | string         | The username that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
 | Password                 | required | string         | The password that is being used for authenticating to the PI Web API                                                                                                                                                                                                                    |
 | VerifySSL                | optional | boolean/string | A feature flag for verifying SSL when connecting to the PI Web API. Alternatively, this can specify the path to a .pem certificate file if a self-signed certificate is being used by the PI Web API. By defualt this is set to true as it is strongly recommended that SSL be checked. |
-| UseCompression           | optional | boolean        | A feature flag for enabling compression on messages sent to the OCS endpoint                                                                                                                                                                                                            |
+| UseCompression           | optional | boolean        | A feature flag for enabling compression on messages sent to the ADH endpoint                                                                                                                                                                                                            |
 | WebRequestTimeoutSeconds | optional | integer        | A feature flag for changing how long it takes for a request to time out                                                                                                                                                                                                                 |
 
 ---

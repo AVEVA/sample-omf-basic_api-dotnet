@@ -147,7 +147,7 @@ namespace OMFAPI
             {
                 if (endpoint.VerifySSL == null)
                     endpoint.VerifySSL = true;
-                if (!(string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))
+                if (!(string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))
                     throw new Exception($"Invalid endpoint type {endpoint.EndpointType}");
             }
 
@@ -205,7 +205,7 @@ namespace OMFAPI
             }
 
             // PI and EDS currently require no auth
-            if (endpoint.EndpointType != "OCS")
+            if (endpoint.EndpointType != "ADH")
                 return null;
 
             // use cached version
@@ -318,7 +318,7 @@ namespace OMFAPI
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "JSON");
             request.Headers.Add("omfversion", OmfVersion);
-            if (string.Equals(endpoint.EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("Authorization", "Bearer " + GetToken(endpoint));
             }

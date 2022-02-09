@@ -10,32 +10,32 @@ namespace OMFAPI
         public bool Selected { get; set; }
 
         /// <summary>
-        /// The endpoint type. This will be OCS, EDS, or PI
+        /// The endpoint type. This will be ADH, EDS, or PI
         /// </summary>
         public string EndpointType { get; set; }
 
         /// <summary>
-        /// The base endpoint. E.g. https://dat-b.osisoft.com for OCS
+        /// The base endpoint. E.g. https://uswe.datahub.connect.aveva.com for ADH
         /// </summary>
         public string Resource { get; set; }
 
         /// <summary>
-        /// The ID of the Namespace in OCS that is being sent to
+        /// The ID of the Namespace in ADH that is being sent to
         /// </summary>
         public string NamespaceId { get; set; }
 
         /// <summary>
-        /// The ID of the Tenant in OCS that is being sent to
+        /// The ID of the Tenant in ADH that is being sent to
         /// </summary>
         public string TenantId { get; set; }
 
         /// <summary>
-        /// The client ID that is being used for authenticating to OCS
+        /// The client ID that is being used for authenticating to ADH
         /// </summary>
         public string ClientId { get; set; }
 
         /// <summary>
-        /// The client secret that is being used for authenticating to OCS
+        /// The client secret that is being used for authenticating to ADH
         /// </summary>
         public string ClientSecret { get; set; }
 
@@ -75,7 +75,7 @@ namespace OMFAPI
         public string Password { get; set; }
 
         /// <summary>
-        /// The token used to authenticate to an OCS endpoint
+        /// The token used to authenticate to an ADH endpoint
         /// </summary>
         public string Token { get; set; }
 
@@ -88,7 +88,7 @@ namespace OMFAPI
             {
                 string baseEndpoint = string.Empty;
 
-                if (string.Equals(EndpointType, "OCS", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
                 {
                     baseEndpoint = $"{Resource}/api/{ApiVersion}/tenants/{TenantId}/namespaces/{NamespaceId}";
                 }
