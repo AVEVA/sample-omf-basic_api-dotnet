@@ -312,6 +312,11 @@ namespace OMFAPI
             // create a request
             var request = WebRequest.Create(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
+            
+            // ignore ssl if specified
+            if ((endpoint.VerifySSL is bool boolean) && boolean == false) {
+                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            }
 
             // add headers to request
             request.Headers.Add("messagetype", messageType);
