@@ -75,7 +75,7 @@ jobs:
   - job: Tests_OnPrem
     pool:
       name: 00-OSIManaged-Containers
-      demands: Agent.OS -equals Windows_NT
+      demands: Agent.OS -equals Linux
     variables:
       - name: Endpoints.0.Selected
         value: false
