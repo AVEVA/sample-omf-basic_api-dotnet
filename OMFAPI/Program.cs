@@ -314,8 +314,10 @@ namespace OMFAPI
             request.Method = "post";
             
             // ignore ssl if specified
-            if ((endpoint.VerifySSL is bool boolean) && boolean == false) {
-                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+            if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+            {
+                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => sender is HttpWebRequest httpWebRequest
+                    && httpWebRequest.RequestUri.Host == new Uri(endpoint.OmfEndpoint).Host;
             }
 
             // add headers to request
