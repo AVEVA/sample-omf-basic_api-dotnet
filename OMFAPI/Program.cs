@@ -310,7 +310,7 @@ namespace OMFAPI
             }
 
             // create a request
-            var request = WebRequest.Create(new Uri(endpoint.OmfEndpoint));
+            var request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
             
             // ignore ssl if specified
