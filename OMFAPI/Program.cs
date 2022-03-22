@@ -319,7 +319,7 @@ namespace OMFAPI
                 // This turns off SSL verification
                 // This should not be done in production, please properly handle your certificates
 #pragma warning disable CA5359
-                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
+                request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
 #pragma warning restore CA5359
             }
 
