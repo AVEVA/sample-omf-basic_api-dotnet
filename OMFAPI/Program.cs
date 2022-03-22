@@ -316,7 +316,9 @@ namespace OMFAPI
             // ignore ssl if specified
             if ((endpoint.VerifySSL is bool boolean) && boolean == false)
             {
-                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => sender is HttpWebRequest httpWebRequest;
+                // This turns off SSL verification
+                // This should not be done in production, please properly handle your certificates
+                request.ServerCertificateValidationCallback += (sender, certificate, chain, sslPolicyErrors) => true;
             }
 
             // add headers to request
