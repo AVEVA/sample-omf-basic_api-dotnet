@@ -312,7 +312,7 @@ namespace OMFAPI
             // create a request
             var request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
-            
+
             // ignore ssl if specified
             if ((endpoint.VerifySSL is bool boolean) && boolean == false)
             {
@@ -335,7 +335,13 @@ namespace OMFAPI
             else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(endpoint.Username, endpoint.Password);
+
+                var credentials = new NetworkCredential(endpoint.Username, endpoint.Password);
+                
+                var credCache = new CredentialCache();
+                credCache.Add(new Uri(endpoint.BaseEndpoint), "Basic", credentials);
+
+                request.Credentials = credCache;
             }
 
             // compress dataJson if configured for compression
