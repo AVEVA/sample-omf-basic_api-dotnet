@@ -36,7 +36,7 @@ variables:
 jobs:
   - job: Tests_ADH
     pool:
-      name: 00-OSIManaged-Test
+      name: 00-OSIManaged-Containers
       demands: Agent.OS -equals Linux
     variables:
       - name: Endpoints.0.Selected
