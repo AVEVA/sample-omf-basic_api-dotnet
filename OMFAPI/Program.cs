@@ -336,12 +336,8 @@ namespace OMFAPI
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
 
-                var credentials = new NetworkCredential(endpoint.Username, endpoint.Password);
-                
-                var credCache = new CredentialCache();
-                credCache.Add(new Uri(endpoint.BaseEndpoint), "Basic", credentials);
-
-                request.Credentials = credCache;
+                var bytes = Encoding.ASCII.GetBytes($"{endpoint.Username}:{endpoint.Password}");
+                request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(bytes));
             }
 
             // compress dataJson if configured for compression
