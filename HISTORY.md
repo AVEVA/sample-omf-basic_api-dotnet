@@ -4,6 +4,7 @@
 
 - Updated dependencies
 - Changed agent used in pipeline
+- Added logic to ignore ssl verification
 
 ## 2.0.11 / 2022-02-09
 
