@@ -75,7 +75,7 @@ jobs:
   - job: Tests_OnPrem
     pool:
       name: 00-OSIManaged-Build
-      demands: sku2 -equals VSBuildTools
+      demands: sku -equals VSBuildTools
     variables:
       - name: Endpoints.0.Selected
         value: false
@@ -113,7 +113,7 @@ jobs:
   - job: Tests_EDS
     pool:
       name: 00-OSIManaged-Build
-      demands: sku2 -equals VSBuildTools
+      demands: sku -equals VSBuildTools
     variables:
       - name: Endpoints.0.Selected
         value: false
