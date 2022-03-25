@@ -1,5 +1,11 @@
 # Version History
 
+## 2.0.12 / 2022-03-23
+
+- Updated dependencies
+- Changed agent used in pipeline
+- Added logic to ignore ssl verification
+
 ## 2.0.11 / 2022-02-09
 
 - Updated for AVEVA Data Hub

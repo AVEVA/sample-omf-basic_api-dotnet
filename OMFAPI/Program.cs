@@ -310,8 +310,18 @@ namespace OMFAPI
             }
 
             // create a request
-            var request = WebRequest.Create(new Uri(endpoint.OmfEndpoint));
+            var request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
+
+            // ignore ssl if specified
+            if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+            {
+                // This turns off SSL verification
+                // This should not be done in production, please properly handle your certificates
+#pragma warning disable CA5359
+                request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+#pragma warning restore CA5359
+            }
 
             // add headers to request
             request.Headers.Add("messagetype", messageType);
@@ -325,7 +335,9 @@ namespace OMFAPI
             else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
-                request.Credentials = new NetworkCredential(endpoint.Username, endpoint.Password);
+
+                var bytes = Encoding.ASCII.GetBytes($"{endpoint.Username}:{endpoint.Password}");
+                request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(bytes));
             }
 
             // compress dataJson if configured for compression
