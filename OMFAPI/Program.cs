@@ -21,10 +21,10 @@ namespace OMFAPI
         // Constant for determining the pause between sending OMF data messages
         private const int SendSleep = 1000;
 
-        private static readonly HttpClient _client = new HttpClient();
+        private static readonly HttpClient _client = new ();
 
         // Holders for the data message values
-        private static readonly Random _rnd = new Random();
+        private static readonly Random _rnd = new ();
         private static bool _dynamicBoolHolder = true;
         private static int _dynamicIntHolder;
 
@@ -58,20 +58,20 @@ namespace OMFAPI
             try
             {
                 // Send out the messages that only need to be sent once
-                foreach (var endpoint in endpoints)
+                foreach (Endpoint endpoint in endpoints)
                 {
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
 
                     // Step 5 - Send OMF Types
-                    foreach (var omfType in omfTypes)
+                    foreach (dynamic omfType in omfTypes)
                     {
                         string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
                         SendMessageToOmfEndpoint(endpoint, "type", omfTypeString);
                     }
 
                     // Step 6 - Send OMF Containers
-                    foreach (var omfContainer in omfContainers)
+                    foreach (dynamic omfContainer in omfContainers)
                     {
                         string omfContainerString = $"[{JsonConvert.SerializeObject(omfContainer)}]";
                         SendMessageToOmfEndpoint(endpoint, "container", omfContainerString);
@@ -89,12 +89,12 @@ namespace OMFAPI
                     * The getData call should also be customized to populate omfData with relevant data.
                     * */
 
-                    foreach (var omfDatum in omfData)
+                    foreach (dynamic omfDatum in omfData)
                     {
                         // retrieve data
                         GetData(omfDatum);
 
-                        foreach (var endpoint in endpoints)
+                        foreach (Endpoint endpoint in endpoints)
                         {
                             // send data
                             string omfDatumString = $"[{JsonConvert.SerializeObject(omfDatum)}]";
@@ -143,7 +143,7 @@ namespace OMFAPI
             settings.Endpoints = endpoints.Where(e => e.Selected).ToList();
 
             // check for optional/nullable parameters and invalid endpoint types
-            foreach (var endpoint in settings.Endpoints)
+            foreach (Endpoint endpoint in settings.Endpoints)
             {
                 if (endpoint.VerifySSL == null)
                     endpoint.VerifySSL = true;
@@ -212,7 +212,7 @@ namespace OMFAPI
             if (!string.IsNullOrWhiteSpace(endpoint.Token))
                 return endpoint.Token;
 
-            using var request = new HttpRequestMessage()
+            using HttpRequestMessage request = new ()
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(endpoint.Resource + "/identity/.well-known/openid-configuration"),
@@ -220,16 +220,16 @@ namespace OMFAPI
             request.Headers.Add("Accept", "application/json");
 
             string res = Send(request).Result;
-            var objectContainingURLForAuth = JsonConvert.DeserializeObject<JObject>(res);
+            JObject objectContainingURLForAuth = JsonConvert.DeserializeObject<JObject>(res);
 
-            var data = new Dictionary<string, string>
+            Dictionary<string, string> data = new ()
             {
                { "client_id", endpoint.ClientId },
                { "client_secret", endpoint.ClientSecret },
                { "grant_type", "client_credentials" },
             };
 
-            using var request2 = new HttpRequestMessage()
+            using HttpRequestMessage request2 = new ()
             {
                 Method = HttpMethod.Post,
                 RequestUri = new Uri(objectContainingURLForAuth["token_endpoint"].ToString()),
@@ -239,7 +239,7 @@ namespace OMFAPI
 
             string res2 = Send(request2).Result;
 
-            var tokenObject = JsonConvert.DeserializeObject<JObject>(res2);
+            JObject tokenObject = JsonConvert.DeserializeObject<JObject>(res2);
             endpoint.Token = tokenObject["access_token"].ToString();
             return endpoint.Token;
         }
@@ -249,9 +249,9 @@ namespace OMFAPI
         /// </summary>
         public static async Task<string> Send(HttpRequestMessage request)
         {
-            var response = await _client.SendAsync(request).ConfigureAwait(false);
+            HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
 
-            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error sending OMF response code:{response.StatusCode}.  Response {responseString}");
@@ -270,12 +270,12 @@ namespace OMFAPI
 
             try
             {
-                using var resp = request.GetResponse();
-                using var response = (HttpWebResponse)resp;
-                var stream = resp.GetResponseStream();
-                var code = (int)response.StatusCode;
+                using WebResponse resp = request.GetResponse();
+                using HttpWebResponse response = (HttpWebResponse)resp;
+                Stream stream = resp.GetResponseStream();
+                int code = (int)response.StatusCode;
 
-                using var reader = new StreamReader(stream);
+                using StreamReader reader = new (stream);
 
                 // Read the content.  
                 string responseString = reader.ReadToEnd();
@@ -286,7 +286,7 @@ namespace OMFAPI
             catch (WebException e)
             {
                 using WebResponse response = e.Response;
-                var httpResponse = (HttpWebResponse)response;
+                HttpWebResponse httpResponse = (HttpWebResponse)response;
 
                 // catch 409 errors as they indicate that the Type already exists
                 if (httpResponse.StatusCode == HttpStatusCode.Conflict)
@@ -310,7 +310,7 @@ namespace OMFAPI
             }
 
             // create a request
-            var request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
+            HttpWebRequest request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
             request.Method = "post";
 
             // ignore ssl if specified
@@ -336,7 +336,7 @@ namespace OMFAPI
             {
                 request.Headers.Add("x-requested-with", "XMLHTTPRequest");
 
-                var bytes = Encoding.ASCII.GetBytes($"{endpoint.Username}:{endpoint.Password}");
+                byte[] bytes = Encoding.ASCII.GetBytes($"{endpoint.Username}:{endpoint.Password}");
                 request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(bytes));
             }
 
@@ -350,10 +350,10 @@ namespace OMFAPI
             }
             else
             {
-                using (var msi = new MemoryStream(Encoding.UTF8.GetBytes(dataJson)))
-                using (var mso = new MemoryStream())
+                using (MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson)))
+                using (MemoryStream mso = new ())
                 {
-                    using (var gs = new GZipStream(mso, CompressionMode.Compress))
+                    using (GZipStream gs = new (mso, CompressionMode.Compress))
                     {
                         // copy bytes from msi to gs
                         byte[] bytes = new byte[4096];
