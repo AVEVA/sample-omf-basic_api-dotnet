@@ -12,13 +12,13 @@ namespace OMFAPITests
 {
     public class UnitTest1
     {
-        private static readonly HttpClient _client = new HttpClient();
+        private static readonly HttpClient _client = new ();
 
         [Fact]
         public void Test1()
         {
             // Steps 1 to 7 - Run the main program
-            var sentData = new Dictionary<string, dynamic>();
+            Dictionary<string, dynamic> sentData = new ();
             Assert.True(Program.RunMain(true, sentData));
 
             // Step 8 - Check Creations
@@ -45,7 +45,7 @@ namespace OMFAPITests
         {
             bool success = true;
 
-            var split = itemName.Split(".");
+            string[] split = itemName.Split(".");
             if (split.Length == 2)
             {
                 string key = split[1];
@@ -70,7 +70,7 @@ namespace OMFAPITests
         private static async Task<HttpResponseMessage> SendGetRequestToEndpoint(Endpoint endpoint, string uri)
         {
             // create a request
-            using var request = new HttpRequestMessage()
+            using HttpRequestMessage request = new ()
             {
                 Method = HttpMethod.Get,
                 RequestUri = new Uri(uri),
@@ -88,7 +88,7 @@ namespace OMFAPITests
                 request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, "{0}:{1}", endpoint.Username, endpoint.Password))));
             }
 
-            var response = await _client.SendAsync(request).ConfigureAwait(false);
+            HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
             return response;
         }
 
@@ -101,19 +101,19 @@ namespace OMFAPITests
 
             bool success = true;
 
-            foreach (var endpoint in endpoints)
+            foreach (Endpoint endpoint in endpoints)
             {
                 try
                 {
                     // delete containers
-                    foreach (var omfContainer in omfContainers)
+                    foreach (dynamic omfContainer in omfContainers)
                     {
                         string omfContainerString = $"[{JsonConvert.SerializeObject(omfContainer)}]";
                         Program.SendMessageToOmfEndpoint(endpoint, "container", omfContainerString, "delete");
                     }
 
                     // delete types
-                    foreach (var omfType in omfTypes)
+                    foreach (dynamic omfType in omfTypes)
                     {
                         string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
                         Program.SendMessageToOmfEndpoint(endpoint, "type", omfTypeString, "delete");
@@ -140,7 +140,7 @@ namespace OMFAPITests
 
             bool success = true;
 
-            foreach (var endpoint in endpoints)
+            foreach (Endpoint endpoint in endpoints)
             {
                 try
                 {
@@ -153,14 +153,14 @@ namespace OMFAPITests
                         string pointsURL = dynamicJson.Links.Points;
 
                         // get point data and check response
-                        foreach (var omfContainer in omfContainers)
+                        foreach (dynamic omfContainer in omfContainers)
                         {
                             response = SendGetRequestToEndpoint(endpoint, $"{pointsURL}?nameFilter={omfContainer.id}*").Result;
                             content = response.Content.ReadAsStringAsync().Result;
                             dynamicJson = JsonConvert.DeserializeObject(content);
 
                             // get end value URLs
-                            foreach (var item in dynamicJson.Items)
+                            foreach (dynamic item in dynamicJson.Items)
                             {
                                 string endValueURL = item.Links.Value;
 
@@ -195,7 +195,7 @@ namespace OMFAPITests
                     else
                     {
                         // retrieve types and check response
-                        foreach (var omfType in omfTypes)
+                        foreach (dynamic omfType in omfTypes)
                         {
                             HttpResponseMessage response = SendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Types/{omfType.id}").Result;
                             if (!response.IsSuccessStatusCode)
@@ -206,7 +206,7 @@ namespace OMFAPITests
                         }
 
                         // retrieve containers and check response
-                        foreach (var omfContainer in omfContainers)
+                        foreach (dynamic omfContainer in omfContainers)
                         {
                             HttpResponseMessage response = SendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Streams/{omfContainer.id}").Result;
                             if (!response.IsSuccessStatusCode)
@@ -217,7 +217,7 @@ namespace OMFAPITests
                         }
 
                         // retrieve most recent data and check response
-                        foreach (var omfDatum in omfData)
+                        foreach (dynamic omfDatum in omfData)
                         {
                             HttpResponseMessage response = SendGetRequestToEndpoint(endpoint, $"{endpoint.BaseEndpoint}/Streams/{omfDatum.containerid}/Data/last").Result;
                             string responseString = response.Content.ReadAsStringAsync().Result;
