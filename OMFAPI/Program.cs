@@ -61,7 +61,10 @@ namespace OMFAPI
                 foreach (Endpoint endpoint in endpoints)
                 {
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+                    {
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
+
+                    }
 
                     // Step 5 - Send OMF Types
                     foreach (dynamic omfType in omfTypes)
@@ -310,8 +313,7 @@ namespace OMFAPI
             }
 
             // create a request
-            HttpWebRequest request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
-            request.Method = "post";
+            HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
 
             // ignore ssl if specified
             if ((endpoint.VerifySSL is bool boolean) && boolean == false)
@@ -341,15 +343,13 @@ namespace OMFAPI
             }
 
             // compress dataJson if configured for compression
-            byte[] byteArray;
-
-            request.ContentType = "application/json";
             if (!endpoint.UseCompression)
             {
-                byteArray = Encoding.UTF8.GetBytes(dataJson);
+                request.Content = new StringContent(dataJson, Encoding.UTF8, "application/json");
             }
             else
             {
+                byte[] byteArray;
                 using (MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson)))
                 using (MemoryStream mso = new ())
                 {
@@ -370,9 +370,8 @@ namespace OMFAPI
                 }
 
                 request.Headers.Add("compression", "gzip");
+                request.Content = new StringContent(dataJson, Encoding.UTF8, "application/json");
             }
-
-            request.ContentLength = byteArray.Length;
 
             Stream dataStream = request.GetRequestStream();
 
