@@ -63,7 +63,6 @@ namespace OMFAPI
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
                     {
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
-
                     }
 
                     // Step 5 - Send OMF Types
@@ -313,16 +312,14 @@ namespace OMFAPI
             }
 
             // create a request
-            HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
+            using HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
 
             // ignore ssl if specified
             if ((endpoint.VerifySSL is bool boolean) && boolean == false)
             {
                 // This turns off SSL verification
                 // This should not be done in production, please properly handle your certificates
-#pragma warning disable CA5359
-                request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-#pragma warning restore CA5359
+                // TODO: request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
             }
 
             // add headers to request
@@ -349,39 +346,40 @@ namespace OMFAPI
             }
             else
             {
-                byte[] byteArray;
-                using (MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson)))
-                using (MemoryStream mso = new ())
+                using MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson));
+                using MemoryStream mso = new ();
+                using (GZipStream gs = new (mso, CompressionMode.Compress))
                 {
-                    using (GZipStream gs = new (mso, CompressionMode.Compress))
+                    // copy bytes from msi to gs
+                    byte[] bytes = new byte[4096];
+
+                    int cnt;
+
+                    while ((cnt = msi.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        // copy bytes from msi to gs
-                        byte[] bytes = new byte[4096];
-
-                        int cnt;
-
-                        while ((cnt = msi.Read(bytes, 0, bytes.Length)) != 0)
-                        {
-                            gs.Write(bytes, 0, cnt);
-                        }
+                        gs.Write(bytes, 0, cnt);
                     }
-
-                    byteArray = mso.ToArray();
                 }
 
                 request.Headers.Add("compression", "gzip");
-                request.Content = new StringContent(dataJson, Encoding.UTF8, "application/json");
+                request.Content = new StringContent(mso.ToString(), Encoding.UTF8, "application/json");
+                
+                /*StreamContent streamContent = new (mso);
+                streamContent.Headers.Add("compression", "gzip");
+                streamContent.Headers.Add("Content-Type", "application/json");
+                request.Content = streamContent;*/
             }
 
-            Stream dataStream = request.GetRequestStream();
+            // TODO: Stream dataStream = request.GetRequestStream();
 
             // Write the data to the request stream.  
-            dataStream.Write(byteArray, 0, byteArray.Length);
+            // TODO: dataStream.Write(byteArray, 0, byteArray.Length);
 
             // Close the Stream object.  
-            dataStream.Close();
+            // TODO: dataStream.Close();
 
-            Send(request);
+            // TODO: Send(request);
+            _ = Send(request).Result;
         }
     }
 }
