@@ -1,6 +1,6 @@
 [
   {
-    "id": "kduffy_FirstDynamicType",
+    "id": "FirstDynamicType",
     "name": "First dynamic type",
     "classification": "dynamic",
     "type": "object",
@@ -20,7 +20,7 @@
     }
   },
   {
-    "id": "kduffy_SecondDynamicType",
+    "id": "SecondDynamicType",
     "name": "Second dynamic type",
     "classification": "dynamic",
     "type": "object",
@@ -52,7 +52,7 @@
     }
   },
   {
-    "id": "kduffy_ThirdDynamicType",
+    "id": "ThirdDynamicType",
     "name": "Third dynamic type",
     "classification": "dynamic",
     "type": "object",

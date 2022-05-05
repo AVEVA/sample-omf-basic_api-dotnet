@@ -261,43 +261,6 @@ namespace OMFAPI
         }
 
         /// <summary>
-        /// Actual async call to send message to omf endpoint
-        /// </summary>
-        public static string Send(WebRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            try
-            {
-                using WebResponse resp = request.GetResponse();
-                using HttpWebResponse response = (HttpWebResponse)resp;
-                Stream stream = resp.GetResponseStream();
-                int code = (int)response.StatusCode;
-
-                using StreamReader reader = new (stream);
-
-                // Read the content.  
-                string responseString = reader.ReadToEnd();
-
-                // Display the content.
-                return responseString;
-            }
-            catch (WebException e)
-            {
-                using WebResponse response = e.Response;
-                HttpWebResponse httpResponse = (HttpWebResponse)response;
-
-                // catch 409 errors as they indicate that the Type already exists
-                if (httpResponse.StatusCode == HttpStatusCode.Conflict)
-                    return string.Empty;
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Sends message to the preconfigured omf endpoint
         /// </summary>
         /// <param name="endpoint">The endpoint to send an OMF message to</param>
@@ -362,23 +325,10 @@ namespace OMFAPI
                 }
 
                 request.Headers.Add("compression", "gzip");
-                request.Content = new StringContent(mso.ToString(), Encoding.UTF8, "application/json");
-                
-                /*StreamContent streamContent = new (mso);
-                streamContent.Headers.Add("compression", "gzip");
-                streamContent.Headers.Add("Content-Type", "application/json");
-                request.Content = streamContent;*/
+                request.Content = new ByteArrayContent(mso.ToArray());
+                request.Content.Headers.Add("Content-Type", "application/json");
             }
 
-            // TODO: Stream dataStream = request.GetRequestStream();
-
-            // Write the data to the request stream.  
-            // TODO: dataStream.Write(byteArray, 0, byteArray.Length);
-
-            // Close the Stream object.  
-            // TODO: dataStream.Close();
-
-            // TODO: Send(request);
             _ = Send(request).Result;
         }
     }
