@@ -3,6 +3,8 @@
 ## 2.1.0 / 2022-05-02
 
 - Upgraded to .NET 6
+- Created endpoint specific HttpClients
+- Moved certificate verification disabling from the request level to the HttpClient level
 
 ## 2.0.13 / 2022-04-15
 
