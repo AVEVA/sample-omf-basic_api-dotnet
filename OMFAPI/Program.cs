@@ -138,13 +138,6 @@ namespace OMFAPI
                 if (test)
                     throw;
             }
-            finally
-            {
-                foreach (HttpClient client in _clients)
-                {
-                    client.Dispose();
-                }
-            }
 
             Console.WriteLine("Done");
             return success;
