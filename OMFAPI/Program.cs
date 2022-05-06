@@ -21,7 +21,8 @@ namespace OMFAPI
         // Constant for determining the pause between sending OMF data messages
         private const int SendSleep = 1000;
 
-        private static readonly HttpClient _client = new ();
+        private static readonly List<HttpClient> _clients = new ();
+        private static readonly List<HttpClientHandler> _handlers = new ();
 
         // Holders for the data message values
         private static readonly Random _rnd = new ();
@@ -60,10 +61,28 @@ namespace OMFAPI
                 // Send out the messages that only need to be sent once
                 foreach (Endpoint endpoint in endpoints)
                 {
+                    HttpClient thisClent;
+
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
                     {
                         Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
+
+                        // Create custom callback to disable certificate checks, create an HttpClient object using it
+                        HttpClientHandler handler = new ();
+                        handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                        thisClent = new (handler);
+
+                        // Add the handler to the parent list to keep it alive beyond this function
+                        _handlers.Add(handler);
                     }
+                    else
+                    {
+                        thisClent = new ();
+                    }
+
+                    // Add this endpoint's HttpClient to the parent list, storing its index on the endpoint object for later retrieval
+                    endpoint.Id = _clients.Count;
+                    _clients.Add(thisClent);
 
                     // Step 5 - Send OMF Types
                     foreach (dynamic omfType in omfTypes)
@@ -118,6 +137,13 @@ namespace OMFAPI
                 success = false;
                 if (test)
                     throw;
+            }
+            finally
+            {
+                foreach (HttpClient client in _clients)
+                {
+                    client.Dispose();
+                }
             }
 
             Console.WriteLine("Done");
@@ -221,7 +247,7 @@ namespace OMFAPI
             };
             request.Headers.Add("Accept", "application/json");
 
-            string res = Send(request).Result;
+            string res = Send(request, endpoint.Id).Result;
             JObject objectContainingURLForAuth = JsonConvert.DeserializeObject<JObject>(res);
 
             Dictionary<string, string> data = new ()
@@ -239,7 +265,7 @@ namespace OMFAPI
             };
             request2.Headers.Add("Accept", "application/json");
 
-            string res2 = Send(request2).Result;
+            string res2 = Send(request2, endpoint.Id).Result;
 
             JObject tokenObject = JsonConvert.DeserializeObject<JObject>(res2);
             endpoint.Token = tokenObject["access_token"].ToString();
@@ -249,9 +275,9 @@ namespace OMFAPI
         /// <summary>
         /// Send message using HttpRequestMessage
         /// </summary>
-        public static async Task<string> Send(HttpRequestMessage request)
+        public static async Task<string> Send(HttpRequestMessage request, int endpointId)
         {
-            HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
+            HttpResponseMessage response = await _clients[endpointId].SendAsync(request).ConfigureAwait(false);
 
             string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
@@ -329,7 +355,7 @@ namespace OMFAPI
                 request.Content.Headers.Add("Content-Type", "application/json");
             }
 
-            _ = Send(request).Result;
+            _ = Send(request, endpoint.Id).Result;
         }
     }
 }

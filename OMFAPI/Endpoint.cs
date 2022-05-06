@@ -112,5 +112,10 @@ namespace OMFAPI
         {
             get { return $"{BaseEndpoint}/omf"; }
         }
+
+        /// <summary>
+        /// The id number for the endpoint, used for endpoint-specific HttpClient objects
+        /// </summary>
+        public int Id { get; set; }
     }
 }
