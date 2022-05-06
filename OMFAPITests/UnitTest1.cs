@@ -101,22 +101,24 @@ namespace OMFAPITests
 
             bool success = true;
 
-            foreach (Endpoint endpoint in endpoints)
+            for (int i = 0; i < endpoints.Count; i++)
             {
+                endpoints[i].Id = i;
+
                 try
                 {
                     // delete containers
                     foreach (dynamic omfContainer in omfContainers)
                     {
                         string omfContainerString = $"[{JsonConvert.SerializeObject(omfContainer)}]";
-                        Program.SendMessageToOmfEndpoint(endpoint, "container", omfContainerString, "delete");
+                        Program.SendMessageToOmfEndpoint(endpoints[i], "container", omfContainerString, "delete");
                     }
 
                     // delete types
                     foreach (dynamic omfType in omfTypes)
                     {
                         string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
-                        Program.SendMessageToOmfEndpoint(endpoint, "type", omfTypeString, "delete");
+                        Program.SendMessageToOmfEndpoint(endpoints[i], "type", omfTypeString, "delete");
                     }
                 }
                 catch (Exception e)

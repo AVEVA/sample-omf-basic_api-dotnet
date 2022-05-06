@@ -296,14 +296,6 @@ namespace OMFAPI
             // create a request
             using HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
 
-            // ignore ssl if specified
-            if ((endpoint.VerifySSL is bool boolean) && boolean == false)
-            {
-                // This turns off SSL verification
-                // This should not be done in production, please properly handle your certificates
-                // TODO: request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-            }
-
             // add headers to request
             request.Headers.Add("messagetype", messageType);
             request.Headers.Add("action", action);
