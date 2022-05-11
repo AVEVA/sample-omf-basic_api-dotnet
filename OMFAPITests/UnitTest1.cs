@@ -101,9 +101,18 @@ namespace OMFAPITests
 
             bool success = true;
 
-            for (int i = 0; i < endpoints.Count; i++)
+            foreach (Endpoint endpoint in endpoints)
             {
-                endpoints[i].Id = i;
+                if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+                {
+                    endpoint.Handler = new ();
+                    endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    endpoint.Client = new (endpoint.Handler);
+                }
+                else
+                {
+                    endpoint.Client = new ();
+                }
 
                 try
                 {
@@ -111,14 +120,14 @@ namespace OMFAPITests
                     foreach (dynamic omfContainer in omfContainers)
                     {
                         string omfContainerString = $"[{JsonConvert.SerializeObject(omfContainer)}]";
-                        Program.SendMessageToOmfEndpoint(endpoints[i], "container", omfContainerString, "delete");
+                        Program.SendMessageToOmfEndpoint(endpoint, "container", omfContainerString, "delete");
                     }
 
                     // delete types
                     foreach (dynamic omfType in omfTypes)
                     {
                         string omfTypeString = $"[{JsonConvert.SerializeObject(omfType)}]";
-                        Program.SendMessageToOmfEndpoint(endpoints[i], "type", omfTypeString, "delete");
+                        Program.SendMessageToOmfEndpoint(endpoint, "type", omfTypeString, "delete");
                     }
                 }
                 catch (Exception e)
@@ -144,6 +153,17 @@ namespace OMFAPITests
 
             foreach (Endpoint endpoint in endpoints)
             {
+                if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+                {
+                    endpoint.Handler = new ();
+                    endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    endpoint.Client = new (endpoint.Handler);
+                }
+                else
+                {
+                    endpoint.Client = new ();
+                }
+
                 try
                 {
                     if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))

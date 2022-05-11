@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace OMFAPI
 {
@@ -114,8 +115,13 @@ namespace OMFAPI
         }
 
         /// <summary>
-        /// The id number for the endpoint, used for endpoint-specific HttpClient objects
+        /// The HttpClient used for executing HTTP requests on this endpoint
         /// </summary>
-        public int Id { get; set; }
+        public HttpClient Client { get; set; }
+
+        /// <summary>
+        /// The HttpClientHandler optionally used for disabling certificate verification checks
+        /// </summary>
+        public HttpClientHandler Handler { get; set; }
     }
 }
