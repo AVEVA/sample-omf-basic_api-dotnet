@@ -60,6 +60,12 @@ jobs:
         parameters:
           secrets: 'TenantId, NamespaceId, ClientId, ClientSecret, Resource'
 
+      - task: UseDotNet@2
+        displayName: 'Install dotnet 6'
+        inputs:
+          packageType: 'sdk'
+          version: '6.x'
+
       - task: DotNetCoreCLI@2
         displayName: 'Nuget restore'
         inputs:
@@ -97,6 +103,12 @@ jobs:
       - template: '/miscellaneous/build_templates/appsettings.yml@templates'
         parameters:
           secrets: 'Username, Password, PIWebAPI, DataArchiveName'
+      
+      - task: UseDotNet@2
+        displayName: 'Install dotnet 6'
+        inputs:
+          packageType: 'sdk'
+          version: '6.x'
 
       - task: DotNetCoreCLI@2
         displayName: 'Nuget restore'
@@ -124,6 +136,12 @@ jobs:
     steps:
       - template: '/miscellaneous/build_templates/appsettings.yml@templates'
 
+      - task: UseDotNet@2
+        displayName: 'Install dotnet 6'
+        inputs:
+          packageType: 'sdk'
+          version: '6.x'
+
       - task: DotNetCoreCLI@2
         displayName: 'Nuget restore'
         inputs:
@@ -139,6 +157,12 @@ jobs:
   - template: '/miscellaneous/build_templates/code-analysis.yml@templates'
     parameters:
       buildSteps:
+        - task: UseDotNet@2
+          displayName: 'Install dotnet 6'
+          inputs:
+            packageType: 'sdk'
+            version: '6.x'
+
         - task: DotNetCoreCLI@2
           displayName: 'Nuget restore'
           inputs:

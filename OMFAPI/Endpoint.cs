@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 
 namespace OMFAPI
 {
@@ -112,5 +113,15 @@ namespace OMFAPI
         {
             get { return $"{BaseEndpoint}/omf"; }
         }
+
+        /// <summary>
+        /// The HttpClient used for executing HTTP requests on this endpoint
+        /// </summary>
+        public HttpClient Client { get; set; }
+
+        /// <summary>
+        /// The HttpClientHandler optionally used for disabling certificate verification checks
+        /// </summary>
+        public HttpClientHandler Handler { get; set; }
     }
 }

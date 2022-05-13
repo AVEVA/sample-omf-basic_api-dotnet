@@ -103,6 +103,17 @@ namespace OMFAPITests
 
             foreach (Endpoint endpoint in endpoints)
             {
+                if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+                {
+                    endpoint.Handler = new ();
+                    endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    endpoint.Client = new (endpoint.Handler);
+                }
+                else
+                {
+                    endpoint.Client = new ();
+                }
+
                 try
                 {
                     // delete containers
@@ -142,6 +153,17 @@ namespace OMFAPITests
 
             foreach (Endpoint endpoint in endpoints)
             {
+                if ((endpoint.VerifySSL is bool boolean) && boolean == false)
+                {
+                    endpoint.Handler = new ();
+                    endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                    endpoint.Client = new (endpoint.Handler);
+                }
+                else
+                {
+                    endpoint.Client = new ();
+                }
+
                 try
                 {
                     if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))

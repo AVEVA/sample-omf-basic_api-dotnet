@@ -21,8 +21,6 @@ namespace OMFAPI
         // Constant for determining the pause between sending OMF data messages
         private const int SendSleep = 1000;
 
-        private static readonly HttpClient _client = new ();
-
         // Holders for the data message values
         private static readonly Random _rnd = new ();
         private static bool _dynamicBoolHolder = true;
@@ -61,7 +59,31 @@ namespace OMFAPI
                 foreach (Endpoint endpoint in endpoints)
                 {
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
-                        Console.WriteLine("You are not verifying the certificate of the end point.  This is not advised for any system as there are security issues with doing this.");
+                    {
+                        if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // The certificate check should not fail for AVEVA Data Hub since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
+                            Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
+                        }
+                        else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Console.WriteLine($"You are not verifying the certificate of the PI end point for Data Archive {endpoint.DataArchiveName}.  This is not advised for any system as there are security issues with doing this.");
+
+                            // Create custom callback to disable certificate checks, create an HttpClient object using it
+                            endpoint.Handler = new ();
+                            endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+                            endpoint.Client = new (endpoint.Handler);
+                        }  
+                        else // EDS
+                        {
+                            Console.WriteLine($"EDS does not use HTTPS, so there is no certificate verification. The VerifySSL setting will be ignore for the EDS endpoint.");
+                        }
+                    }
+
+                    if (endpoint.Client == null)
+                    {
+                        endpoint.Client = new ();
+                    }
 
                     // Step 5 - Send OMF Types
                     foreach (dynamic omfType in omfTypes)
@@ -219,7 +241,7 @@ namespace OMFAPI
             };
             request.Headers.Add("Accept", "application/json");
 
-            string res = Send(request).Result;
+            string res = Send(request, endpoint).Result;
             JObject objectContainingURLForAuth = JsonConvert.DeserializeObject<JObject>(res);
 
             Dictionary<string, string> data = new ()
@@ -237,7 +259,7 @@ namespace OMFAPI
             };
             request2.Headers.Add("Accept", "application/json");
 
-            string res2 = Send(request2).Result;
+            string res2 = Send(request2, endpoint).Result;
 
             JObject tokenObject = JsonConvert.DeserializeObject<JObject>(res2);
             endpoint.Token = tokenObject["access_token"].ToString();
@@ -247,52 +269,20 @@ namespace OMFAPI
         /// <summary>
         /// Send message using HttpRequestMessage
         /// </summary>
-        public static async Task<string> Send(HttpRequestMessage request)
+        public static async Task<string> Send(HttpRequestMessage request, Endpoint endpoint)
         {
-            HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
+            if (endpoint == null)
+            {
+                throw new ArgumentNullException(nameof(endpoint));
+            }
+
+            HttpResponseMessage response = await endpoint.Client.SendAsync(request).ConfigureAwait(false);
 
             string responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"Error sending OMF response code:{response.StatusCode}.  Response {responseString}");
             return responseString;
-        }
-
-        /// <summary>
-        /// Actual async call to send message to omf endpoint
-        /// </summary>
-        public static string Send(WebRequest request)
-        {
-            if (request == null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            try
-            {
-                using WebResponse resp = request.GetResponse();
-                using HttpWebResponse response = (HttpWebResponse)resp;
-                Stream stream = resp.GetResponseStream();
-                int code = (int)response.StatusCode;
-
-                using StreamReader reader = new (stream);
-
-                // Read the content.  
-                string responseString = reader.ReadToEnd();
-
-                // Display the content.
-                return responseString;
-            }
-            catch (WebException e)
-            {
-                using WebResponse response = e.Response;
-                HttpWebResponse httpResponse = (HttpWebResponse)response;
-
-                // catch 409 errors as they indicate that the Type already exists
-                if (httpResponse.StatusCode == HttpStatusCode.Conflict)
-                    return string.Empty;
-                throw;
-            }
         }
 
         /// <summary>
@@ -310,18 +300,7 @@ namespace OMFAPI
             }
 
             // create a request
-            HttpWebRequest request = HttpWebRequest.CreateHttp(new Uri(endpoint.OmfEndpoint));
-            request.Method = "post";
-
-            // ignore ssl if specified
-            if ((endpoint.VerifySSL is bool boolean) && boolean == false)
-            {
-                // This turns off SSL verification
-                // This should not be done in production, please properly handle your certificates
-#pragma warning disable CA5359
-                request.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-#pragma warning restore CA5359
-            }
+            using HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
 
             // add headers to request
             request.Headers.Add("messagetype", messageType);
@@ -341,48 +320,33 @@ namespace OMFAPI
             }
 
             // compress dataJson if configured for compression
-            byte[] byteArray;
-
-            request.ContentType = "application/json";
             if (!endpoint.UseCompression)
             {
-                byteArray = Encoding.UTF8.GetBytes(dataJson);
+                request.Content = new StringContent(dataJson, Encoding.UTF8, "application/json");
             }
             else
             {
-                using (MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson)))
-                using (MemoryStream mso = new ())
+                using MemoryStream msi = new (Encoding.UTF8.GetBytes(dataJson));
+                using MemoryStream mso = new ();
+                using (GZipStream gs = new (mso, CompressionMode.Compress))
                 {
-                    using (GZipStream gs = new (mso, CompressionMode.Compress))
+                    // copy bytes from msi to gs
+                    byte[] bytes = new byte[4096];
+
+                    int cnt;
+
+                    while ((cnt = msi.Read(bytes, 0, bytes.Length)) != 0)
                     {
-                        // copy bytes from msi to gs
-                        byte[] bytes = new byte[4096];
-
-                        int cnt;
-
-                        while ((cnt = msi.Read(bytes, 0, bytes.Length)) != 0)
-                        {
-                            gs.Write(bytes, 0, cnt);
-                        }
+                        gs.Write(bytes, 0, cnt);
                     }
-
-                    byteArray = mso.ToArray();
                 }
 
                 request.Headers.Add("compression", "gzip");
+                request.Content = new ByteArrayContent(mso.ToArray());
+                request.Content.Headers.Add("Content-Type", "application/json");
             }
 
-            request.ContentLength = byteArray.Length;
-
-            Stream dataStream = request.GetRequestStream();
-
-            // Write the data to the request stream.  
-            dataStream.Write(byteArray, 0, byteArray.Length);
-
-            // Close the Stream object.  
-            dataStream.Close();
-
-            Send(request);
+            _ = Send(request, endpoint).Result;
         }
     }
 }
