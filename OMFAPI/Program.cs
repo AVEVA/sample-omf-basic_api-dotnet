@@ -63,7 +63,7 @@ namespace OMFAPI
                         if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
                         {
                             // The certificate check should not fail for AVEVA Data Hub since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
-                            Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. This setting will be ignore for namespace {endpoint.NamespaceId}.");
+                            Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
                         }
                         else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
                         {
@@ -74,6 +74,10 @@ namespace OMFAPI
                             endpoint.Handler.ServerCertificateCustomValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
                             endpoint.Client = new (endpoint.Handler);
                         }  
+                        else // EDS
+                        {
+                            Console.WriteLine($"EDS does not use HTTPS, so there is no certificate verification. The VerifySSL setting will be ignore for the EDS endpoint.");
+                        }
                     }
 
                     if (endpoint.Client == null)
