@@ -44,8 +44,8 @@ parameters:
 jobs:
   - job: Tests_ADH
     pool:
-      name: 00-OSIManaged-Containers
-      demands: ${{ parameters.containerDemandsADH }}
+      name: OpsGuild-Containers-Staging
+      demands: Agent.Name -equals osimanagedagent-a-1IACDH0001
     variables:
       - name: Endpoints.0.Selected
         value: true
@@ -88,8 +88,8 @@ jobs:
 
   - job: Tests_OnPrem
     pool:
-      name: 00-OSIManaged-Build
-      demands: ${{ parameters.containerDemandsOnPrem }}
+      name: OpsGuild-Containers-Staging
+      demands: Agent.Name -equals osimanagedagent-a-1IACDH0001
     variables:
       - name: Endpoints.0.Selected
         value: false
@@ -132,8 +132,8 @@ jobs:
 
   - job: Tests_EDS
     pool:
-      name: 00-OSIManaged-Build
-      demands: ${{ parameters.containerDemandsEDS }}
+      name: OpsGuild-Containers-Staging
+      demands: Agent.Name -equals osimanagedagent-a-1IACDH0001
     variables:
       - name: Endpoints.0.Selected
         value: false
