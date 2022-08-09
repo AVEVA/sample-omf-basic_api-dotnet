@@ -43,6 +43,7 @@ parameters:
 
 jobs:
   - job: Tests_ADH
+    condition: ne(variables['Build.Reason'], 'Schedule')
     pool:
       name: 00-OSIManaged-Containers
       demands: ${{ parameters.containerDemandsADH }}
@@ -87,6 +88,7 @@ jobs:
           testRunTitle: '$(Agent.JobName) on $(Agent.OS)'
 
   - job: Tests_OnPrem
+    condition: ne(variables['Build.Reason'], 'Schedule')
     pool:
       name: 00-OSIManaged-Build
       demands: ${{ parameters.containerDemandsOnPrem }}
@@ -131,6 +133,7 @@ jobs:
           testRunTitle: '$(Agent.JobName) on $(Agent.OS)'
 
   - job: Tests_EDS
+    condition: ne(variables['Build.Reason'], 'Schedule')
     pool:
       name: 00-OSIManaged-Build
       demands: ${{ parameters.containerDemandsEDS }}
