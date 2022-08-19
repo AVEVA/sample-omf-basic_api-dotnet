@@ -1,6 +1,6 @@
 # Version History
 
-## [' ', 'NET sample to send OMF to PI or ADH\n'] / 2022-09-17
+## 2.1.4 / 2022-09-17
 
 - Automate dependabot approval and automerge
 
