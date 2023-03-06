@@ -32,7 +32,8 @@ variables:
   - template: '/miscellaneous/build_templates/variables.yml@templates'
   - name: analysisProject
     value: OMF_API_DotNet
-  
+
+jobs:
   - template: '/miscellaneous/build_templates/code-analysis.yml@templates'
     parameters:
       buildSteps:
