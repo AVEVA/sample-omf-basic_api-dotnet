@@ -12,8 +12,6 @@ namespace OMFAPITests
 {
     public class UnitTest1
     {
-        private static readonly HttpClient _client = new ();
-
         [Fact]
         public void Test1()
         {
@@ -88,7 +86,7 @@ namespace OMFAPITests
                 request.Headers.Add("Authorization", "Basic " + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format(CultureInfo.InvariantCulture, "{0}:{1}", endpoint.Username, endpoint.Password))));
             }
 
-            HttpResponseMessage response = await _client.SendAsync(request).ConfigureAwait(false);
+            HttpResponseMessage response = await endpoint.Client.SendAsync(request).ConfigureAwait(false);
             return response;
         }
 
