@@ -62,8 +62,8 @@ namespace OMFAPI
                     {
                         if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
                         {
-                            // The certificate check should not fail for AVEVA Data Hub since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
-                            Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
+                            // The certificate check should not fail for CONNECT data services since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
+                            Console.WriteLine($"Certificate verification should not be diabled for CONNECT data services endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
                         }
                         else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
                         {

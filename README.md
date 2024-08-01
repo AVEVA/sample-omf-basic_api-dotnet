@@ -1,22 +1,22 @@
-# Building a .NET sample to send OMF to PI or ADH
+# Building a .NET sample to send OMF to PI or Cds
 
 **Version**: 2.1.5
 
-| ADH Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
+| Cds Test Status                                                                                                                                                                                                                                                                                                                                                    | EDS Test Status                                                                                                                                                                                                                                                                                                                                                    | PI Test Status                                                                                                                                                                                                                                                                                                                                                        |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_ADH)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_EDS)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) | [![Build Status](https://dev.azure.com/osieng/engineering/_apis/build/status/product-readiness/OMF/aveva.sample-omf-basic_api-dotnet?branchName=main&jobName=Tests_OnPrem)](https://dev.azure.com/osieng/engineering/_build/latest?definitionId=2634&branchName=main) |
+| [![Build Status](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_apis/build/status%2Fproduct-readiness%2FOMF%2FAVEVA.sample-omf-basic_api-dotnet?repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_ADH)](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_build/latest?definitionId=16159&repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_apis/build/status%2Fproduct-readiness%2FOMF%2FAVEVA.sample-omf-basic_api-dotnet?repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_EDS)](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_build/latest?definitionId=16159&repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main) | [![Build Status](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_apis/build/status%2Fproduct-readiness%2FOMF%2FAVEVA.sample-omf-basic_api-dotnet?repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main)](https://dev.azure.com/AVEVA-VSTS/Cloud%20Platform/_build/latest?definitionId=16159&repoName=AVEVA%2Fsample-omf-basic_api-dotnet&branchName=main&jobName=Tests_OnPrem) |
 
 Developed against DotNet 6.0
 
 ## Building a sample with the rest calls directly
 
-The sample does not makes use of the AVEVA Data Hub Client Libraries.
+The sample does not makes use of the CONNECT data services Client Libraries.
 
 The sample also does not use any libraries for connecting to PI. Generally a library will be easier to use.
 
 This sample also doesn't use any help to build the JSON strings for the OMF messages. This works for simple examples, and for set demos, but if building something more it may be easier to not form the JSON messages by hand.
 
-[OMF documentation](https://omf-docs.osisoft.com/)
+[OMF documentation](https://docs.aveva.com/bundle/connect-data-services/page/1263258.html)
 
 ## To Run this Sample in Visual Studio
 
@@ -33,7 +33,7 @@ This sample also doesn't use any help to build the JSON strings for the OMF mess
 
 ## Customizing the Application
 
-This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMF-Types.json) [OMF-Containers.json](OMF-Containers.json), and [OMF-Data.json](OMF-Data.json) files respectively. Each one of these files contains an array of OMF json objects, which are created in the endpoints specified in [appsettings.json](appsettings.placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our [OMF version 1.1 documentation](https://omf-docs.osisoft.com/documentation_v11/Whats_New.html).
+This application can be customized to send your own custom types, containers, and data by modifying the [OMF-Types.json](OMF-Types.json) [OMF-Containers.json](OMF-Containers.json), and [OMF-Data.json](OMF-Data.json) files respectively. Each one of these files contains an array of OMF json objects, which are created in the endpoints specified in [appsettings.json](appsettings.placeholder.json) when the application is run. For more information on forming OMF messages, please refer to our [OMF version 1.1 documentation](https://docs.aveva.com/search?labelkey=OSIsoft-Message-Format_1.1).
 
 In addition to modifying the json files mentioned above, the get_data function in [Program.cs](OMFAPI/Program.cs) should be updated to populate the OMF data messages specified in [OMF-Data.json](OMF-Data.json) with data from your data source. Finally, if there are any other activities that you would like to be running continuously, this logic can be added under the while loop in the RunMain() function of [Program.cs](OMFAPI/Program.cs).
 
@@ -41,13 +41,13 @@ In addition to modifying the json files mentioned above, the get_data function i
 
 The sample is configured using the file [appsettings.placeholder.json](appsettings.placeholder.json). Before editing, rename this file to `appsettings.json`. This repository's `.gitignore` rules should prevent the file from ever being checked in to any fork or branch, to ensure credentials are not compromised.
 
-The application can be configured to send to any number of endpoints specified in the endpoints array within appsettings.json. In addition, there are three types of endpoints: [ADH](#adh-endpoint-configuration), [EDS](#eds-endpoint-configuration), and [PI](#pi-endpoint-configuration). Each of the 3 types of enpoints are configured differently and their configurations are explained in the sections below.
+The application can be configured to send to any number of endpoints specified in the endpoints array within appsettings.json. In addition, there are three types of endpoints: [Cds](#adh-endpoint-configuration), [EDS](#eds-endpoint-configuration), and [PI](#pi-endpoint-configuration). Each of the 3 types of enpoints are configured differently and their configurations are explained in the sections below.
 
-### ADH Endpoint Configuration
+### Cds Endpoint Configuration
 
 An OMF ingress client must be configured. On our [AVEVA Learning](https://www.youtube.com/channel/UC333r4jIeHaY-rGgMjON54g) Channel on YouTube we have a video on [Ceating an OMF Connection](https://www.youtube.com/watch?v=52lAnkGC1IM).
 
-The format of the configuration for an ADH endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
+The format of the configuration for an Cds endpoint is shown below along with descriptions of each parameter. Replace all parameters with appropriate values.
 
 ```json
 {
@@ -133,6 +133,6 @@ The format of the configuration for a PI endpoint is shown below along with desc
 
 ---
 
-For the general steps or switch languages see the Task [ReadMe](https://github.com/osisoft/OSI-Samples-OMF/blob/main/docs/OMF_BASIC.md)  
-For the main OMF page [ReadMe](https://github.com/osisoft/OSI-Samples-OMF)  
-For the main landing page [ReadMe](https://github.com/osisoft/OSI-Samples)
+For the general steps or switch languages see the Task [ReadMe](https://github.com/AVEVA/AVEVA-Samples-OMF/blob/main/docs/OMF_BASIC.md)  
+For the main OMF page [ReadMe](https://github.com/AVEVA/AVEVA-Samples-OMF)  
+For the main AVEVA samples page [ReadMe](https://github.com/AVEVA/AVEVA-Samples)
