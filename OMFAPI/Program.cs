@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -62,7 +61,7 @@ namespace OMFAPI
                     {
                         if (string.Equals(endpoint.EndpointType, "CDS", StringComparison.OrdinalIgnoreCase))
                         {
-                            // The certificate check should not fail for CONNECT data services since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
+                            // The certificate check should not fail for CONNECT data services since that certificate is managed by AVEVA. If the certificate verification is failing, please contact technical support.
                             Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
                         }
                         else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
