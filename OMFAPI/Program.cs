@@ -220,10 +220,7 @@ namespace OMFAPI
         /// <param name="endpoint">The endpoint to retieve a token for</param>
         public static string GetToken(Endpoint endpoint)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
+            ArgumentNullException.ThrowIfNull(endpoint);
 
             // PI and EDS currently require no auth
             if (endpoint.EndpointType != "CDS")
@@ -293,10 +290,7 @@ namespace OMFAPI
         /// <param name="action">The action for the OMF endpoint to conduct</param>
         public static void SendMessageToOmfEndpoint(Endpoint endpoint, string messageType, string dataJson, string action = "create")
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
+            ArgumentNullException.ThrowIfNull(endpoint);
 
             // create a request
             using HttpRequestMessage request = new (HttpMethod.Post, new Uri(endpoint.OmfEndpoint));
