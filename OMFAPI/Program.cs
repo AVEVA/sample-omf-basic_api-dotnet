@@ -267,10 +267,7 @@ namespace OMFAPI
         /// </summary>
         public static async Task<string> Send(HttpRequestMessage request, Endpoint endpoint)
         {
-            if (endpoint == null)
-            {
-                throw new ArgumentNullException(nameof(endpoint));
-            }
+            ArgumentNullException.ThrowIfNull(endpoint);
 
             HttpResponseMessage response = await endpoint.Client.SendAsync(request).ConfigureAwait(false);
 
