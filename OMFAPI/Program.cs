@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -16,7 +15,7 @@ namespace OMFAPI
     public static class Program
     {
         // The version of the OMFmessages
-        private const string OmfVersion = "1.1";
+        private const string OmfVersion = "1.2";
 
         // Constant for determining the pause between sending OMF data messages
         private const int SendSleep = 1000;
@@ -60,9 +59,9 @@ namespace OMFAPI
                 {
                     if ((endpoint.VerifySSL is bool boolean) && boolean == false)
                     {
-                        if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(endpoint.EndpointType, "CDS", StringComparison.OrdinalIgnoreCase))
                         {
-                            // The certificate check should not fail for AVEVA Data Hub since that certificate is managed by AVEVA. If the certificate verification is failing, please contact Technical Support.
+                            // The certificate check should not fail for CONNECT data services since that certificate is managed by AVEVA. If the certificate verification is failing, please contact technical support.
                             Console.WriteLine($"Certificate verification should not be diabled for AVEVA Data Hub endpoints. The VerifySSL setting will be ignore for namespace {endpoint.NamespaceId}.");
                         }
                         else if (string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase))
@@ -169,7 +168,7 @@ namespace OMFAPI
             {
                 if (endpoint.VerifySSL == null)
                     endpoint.VerifySSL = true;
-                if (!(string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))
+                if (!(string.Equals(endpoint.EndpointType, "CDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "EDS", StringComparison.OrdinalIgnoreCase) || string.Equals(endpoint.EndpointType, "PI", StringComparison.OrdinalIgnoreCase)))
                     throw new Exception($"Invalid endpoint type {endpoint.EndpointType}");
             }
 
@@ -227,7 +226,7 @@ namespace OMFAPI
             }
 
             // PI and EDS currently require no auth
-            if (endpoint.EndpointType != "ADH")
+            if (endpoint.EndpointType != "CDS")
                 return null;
 
             // use cached version
@@ -307,7 +306,7 @@ namespace OMFAPI
             request.Headers.Add("action", action);
             request.Headers.Add("messageformat", "JSON");
             request.Headers.Add("omfversion", OmfVersion);
-            if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(endpoint.EndpointType, "CDS", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("Authorization", "Bearer " + GetToken(endpoint));
             }

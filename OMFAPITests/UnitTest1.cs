@@ -76,7 +76,7 @@ namespace OMFAPITests
 
             // add headers to request
             request.Headers.Add("Accept-Verbosity", "verbose");
-            if (string.Equals(endpoint.EndpointType, "ADH", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(endpoint.EndpointType, "CDS", StringComparison.OrdinalIgnoreCase))
             {
                 request.Headers.Add("Authorization", "Bearer " + Program.GetToken(endpoint));
             }

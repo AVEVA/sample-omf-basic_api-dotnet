@@ -1,5 +1,11 @@
 # Version History
 
+## 2.1.6 / 2025-02-04
+
+- Update to OMF version 1.2
+- Update references from ADH to Cds
+- Upgrade .NET 8
+
 ## 2.1.5 / 2023-03-06
 
 - Move code analysis to new pipeline
